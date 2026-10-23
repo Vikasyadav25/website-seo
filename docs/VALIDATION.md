@@ -1,8 +1,15 @@
 # Local validation record
 
 Validated on Windows with Node 22.14.0, pnpm 12.9.1 and Python 3.13.12.
-GitHub CI is configured for current Node 22 and Python 3.12, but no hosted run or
-deployment has been executed yet.
+Hosted Node 22 / Python 3.12 CI also passed:
+[successful CI run](https://github.com/Vikasyadav25/website-seo/actions/runs/39890994645).
+[Pages deployment](https://github.com/Vikasyadav25/website-seo/actions/runs/39891232049)
+completed successfully for application commit `965f665`.
+
+The [live DEMO](https://vikasyadav25.github.io/website-seo/) and its public report
+both returned HTTP 200. The deployed report passed the schema/privacy validator.
+Live browser verification passed the overview, product drawer, and 360px mobile
+layout with zero page errors. Pages deployment is restricted to `main`.
 
 | Check                                            | Result                            |
 | ------------------------------------------------ | --------------------------------- |

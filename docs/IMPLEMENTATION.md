@@ -20,9 +20,9 @@
 
 ## Not verified live / setup required
 
-- GitHub workflow execution, Pages hosting, and branch/environment protection
-  for `Vikasyadav25/website-seo`. Repository access has been verified.
-- Actual hosted Pages deployment and scheduled-run permissions/quota.
+- Main branch protection, protected Shopify reviewer configuration, and scheduled
+  run quota/access verification. Hosted CI and Pages deployment have passed; the
+  Pages environment restricts deployments to `main`.
 - Shopify store domain, credential lifecycle/scopes, GSC property/identity, PSI key.
 - Test-product dry-run, encrypted-original recovery, actual publish and rollback.
 - Longitudinal real performance comparisons and measured ranking/conversion outcomes.

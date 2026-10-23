@@ -3,7 +3,9 @@
 A public-safe SEO workspace for Ratniva: product audits, technical findings,
 content readiness, evidence-led recommendations, and controlled review.
 
-**Current release: tested local implementation. DEMO by default. Live setup pending.**
+**Live dashboard:** [Open Ratniva Growth OS](https://vikasyadav25.github.io/website-seo/).
+
+**Current release: deployed DEMO. Live API setup pending.**
 All default metrics and products are synthetic. Read-only collectors, factual drafts,
 encrypted private output, and a guarded publishing/rollback path are implemented
 and tested with mocks. No credentials were used, no live collector was verified,
