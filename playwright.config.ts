@@ -9,6 +9,7 @@ export default defineConfig({
   },
   webServer: {
     command: "pnpm preview --port 4173 --strictPort",
+    env: { PAGES_BASE_PATH: "/website-seo/" },
     url: "http://127.0.0.1:4173/website-seo/",
     reuseExistingServer: !process.env.CI,
   },
