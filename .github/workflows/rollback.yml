@@ -1,0 +1,59 @@
+name: Rollback approved event
+on:
+  workflow_dispatch:
+    inputs:
+      publish_event_id:
+        description: Exact event ID from sanitized publication metadata
+        required: true
+      publish_run_id:
+        description: Original trusted publishing workflow run ID
+        required: true
+      publish_attempt:
+        description: Original workflow attempt number
+        default: "1"
+        required: true
+      dry_run:
+        description: Verify receipt only; no Shopify rollback
+        type: boolean
+        default: true
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: shopify-production
+  cancel-in-progress: false
+jobs:
+  rollback:
+    if: github.ref == 'refs/heads/main'
+    environment: shopify-production
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      PUBLISH_OPERATORS: ${{ vars.PUBLISH_OPERATORS }}
+      PUBLISH_ENABLED: ${{ vars.PUBLISH_ENABLED || 'false' }}
+      ENABLE_SHOPIFY_WRITES: ${{ vars.ENABLE_SHOPIFY_WRITES || 'false' }}
+      DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
+      SHOPIFY_STORE_DOMAIN: ${{ vars.SHOPIFY_STORE_DOMAIN }}
+      SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}
+      ROLLBACK_ENCRYPTION_KEY: ${{ secrets.ROLLBACK_ENCRYPTION_KEY }}
+      EVENT_ID: ${{ inputs.publish_event_id }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: rollback-${{ inputs.publish_run_id }}-${{ inputs.publish_attempt }}
+          path: private
+          run-id: ${{ inputs.publish_run_id }}
+          github-token: ${{ github.token }}
+      - name: Authenticate receipt and operator
+        run: python -m agents.proposals.rollback --receipt private/rollback.enc --event-id "$EVENT_ID"
+      - name: Restore only unchanged published fields
+        if: inputs.dry_run == false
+        run: python -m agents.proposals.rollback --receipt private/rollback.enc --event-id "$EVENT_ID" --execute

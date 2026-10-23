@@ -1,0 +1,14 @@
+# Read-only inventory. Version is explicitly pinned in site.yaml.
+query Inventory($after: String) {
+  products(first: 50, after: $after) {
+    nodes {
+      id
+      title
+      productType
+      onlineStoreUrl
+      updatedAt
+      seo { title description }
+    }
+    pageInfo { hasNextPage endCursor }
+  }
+}

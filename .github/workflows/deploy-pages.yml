@@ -1,0 +1,72 @@
+name: Deploy Pages
+on:
+  workflow_run:
+    workflows: [CI, Daily audit]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: pages
+  cancel-in-progress: false
+jobs:
+  build:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' || github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository && github.event.workflow_run.event != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: "22"
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - run: npm install --global pnpm@12.9.1
+      - run: pnpm install --frozen-lockfile
+      - run: python -m pip install -r requirements.txt
+      - name: Generate safe report from reviewed main
+        if: github.event_name != 'workflow_run' || github.event.workflow_run.name != 'Daily audit'
+        run: python -m agents.main --mode demo --repository-url "$REPOSITORY_URL" --output web/public/data/report.json
+        env:
+          REPOSITORY_URL: https://github.com/${{ github.repository }}
+      - name: Retrieve only the public-safe report from a trusted main audit
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Daily audit'
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
+        with:
+          name: public-safe-report
+          path: incoming-public-report
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ github.token }}
+      - name: Select trusted audit JSON
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Daily audit'
+        run: cp incoming-public-report/public-report.json web/public/data/report.json
+      - run: python scripts/validate-public-data.py web/public/data/report.json
+      - run: pnpm lint
+      - run: pnpm test
+      - run: python -m pytest agents/tests
+      - run: pnpm build
+        env:
+          PAGES_BASE_PATH: /${{ github.event.repository.name }}/
+      - run: python scripts/scan-secrets.py dist
+      - uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4
+        with:
+          path: dist
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy reviewed artifact
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4

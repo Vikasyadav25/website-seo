@@ -1,0 +1,908 @@
+{
+  "schemaVersion": 1,
+  "mode": "demo",
+  "generatedAt": "2026-10-23T02:30:00Z",
+  "siteUrl": "https://ratniva.com",
+  "repositoryUrl": null,
+  "latestRun": {
+    "runId": "DEMO-20261023",
+    "startedAt": "2026-10-23T02:30:00Z",
+    "finishedAt": "2026-10-23T02:30:02Z",
+    "status": "skipped",
+    "jobName": "Demo fixture generation",
+    "sourceStatuses": [
+      {
+        "name": "gsc",
+        "status": "not_configured",
+        "message": "DEMO fixture; live source is not connected."
+      },
+      {
+        "name": "shopify",
+        "status": "not_configured",
+        "message": "DEMO fixture; live source is not connected."
+      },
+      {
+        "name": "pagespeed",
+        "status": "not_configured",
+        "message": "DEMO fixture; live source is not connected."
+      },
+      {
+        "name": "crawler",
+        "status": "not_configured",
+        "message": "DEMO fixture; live source is not connected."
+      },
+      {
+        "name": "merchant_manual",
+        "status": "not_configured",
+        "message": "DEMO fixture; live source is not connected."
+      }
+    ],
+    "issueCounts": {
+      "critical": 0,
+      "high": 3,
+      "medium": 2,
+      "low": 1
+    }
+  },
+  "sourceHealth": [
+    {
+      "name": "gsc",
+      "status": "not_configured",
+      "message": "DEMO fixture; live source is not connected."
+    },
+    {
+      "name": "shopify",
+      "status": "not_configured",
+      "message": "DEMO fixture; live source is not connected."
+    },
+    {
+      "name": "pagespeed",
+      "status": "not_configured",
+      "message": "DEMO fixture; live source is not connected."
+    },
+    {
+      "name": "crawler",
+      "status": "not_configured",
+      "message": "DEMO fixture; live source is not connected."
+    },
+    {
+      "name": "merchant_manual",
+      "status": "not_configured",
+      "message": "DEMO fixture; live source is not connected."
+    }
+  ],
+  "issues": [
+    {
+      "id": "7520e53b8390",
+      "source": "demo",
+      "category": "missing-meta",
+      "severity": "high",
+      "targetUrl": "https://ratniva.com/products/demo-silver-ring",
+      "evidence": "Meta description is absent in the synthetic page.",
+      "discoveredAt": "2026-10-20T02:30:00Z",
+      "lastVerifiedAt": "2026-10-23T02:30:00Z",
+      "recommendation": "Draft a description using verified product facts."
+    },
+    {
+      "id": "2ae51aa85cc7",
+      "source": "demo",
+      "category": "canonical-review",
+      "severity": "high",
+      "targetUrl": "https://ratniva.com/collections/demo-rings",
+      "evidence": "Synthetic collection canonical points to a different URL.",
+      "discoveredAt": "2026-10-20T02:30:00Z",
+      "lastVerifiedAt": "2026-10-23T02:30:00Z",
+      "recommendation": "Verify the preferred URL before changing the canonical."
+    },
+    {
+      "id": "0e3ef79ede18",
+      "source": "demo",
+      "category": "missing-alt",
+      "severity": "medium",
+      "targetUrl": "https://ratniva.com/products/demo-silver-hoops",
+      "evidence": "One synthetic product image has empty alt text.",
+      "discoveredAt": "2026-10-20T02:30:00Z",
+      "lastVerifiedAt": "2026-10-23T02:30:00Z",
+      "recommendation": "Review the image and write a factual description."
+    },
+    {
+      "id": "b3230c756f98",
+      "source": "demo",
+      "category": "thin-introduction",
+      "severity": "medium",
+      "targetUrl": "https://ratniva.com/collections/demo-earrings",
+      "evidence": "The synthetic collection lacks buying guidance.",
+      "discoveredAt": "2026-10-20T02:30:00Z",
+      "lastVerifiedAt": "2026-10-23T02:30:00Z",
+      "recommendation": "Add a short useful introduction grounded in the collection."
+    },
+    {
+      "id": "020b31f21ce9",
+      "source": "demo",
+      "category": "missing-title",
+      "severity": "high",
+      "targetUrl": "https://ratniva.com/products/demo-silver-pendant",
+      "evidence": "The synthetic SEO title is empty.",
+      "discoveredAt": "2026-10-20T02:30:00Z",
+      "lastVerifiedAt": "2026-10-23T02:30:00Z",
+      "recommendation": "Review the proposed title against the product record."
+    },
+    {
+      "id": "d4cbba900dfa",
+      "source": "demo",
+      "category": "schema-review",
+      "severity": "low",
+      "targetUrl": "https://ratniva.com/pages/demo-care",
+      "evidence": "Structured data has not been validated in this example.",
+      "discoveredAt": "2026-10-20T02:30:00Z",
+      "lastVerifiedAt": "2026-10-23T02:30:00Z",
+      "recommendation": "Validate supported structured data; do not infer eligibility."
+    }
+  ],
+  "productAuditSummaries": [
+    {
+      "id": "DEMO-001",
+      "title": "Demo · Minimal silver ring",
+      "url": "https://ratniva.com/products/demo-silver-ring",
+      "productType": "Rings",
+      "score": 72,
+      "issues": ["missing-meta"],
+      "reviewState": "needs_review",
+      "lastAudit": "2026-10-23T02:30:00Z",
+      "facts": [
+        "Synthetic development product",
+        "Material: silver (fixture only; not a live product claim)"
+      ],
+      "checklist": [
+        {
+          "label": "Descriptive product title",
+          "passed": true
+        },
+        {
+          "label": "Unique meta description",
+          "passed": false
+        },
+        {
+          "label": "Descriptive image alt text",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "DEMO-002",
+      "title": "Demo · Everyday silver hoops",
+      "url": "https://ratniva.com/products/demo-silver-hoops",
+      "productType": "Earrings",
+      "score": 86,
+      "issues": ["missing-alt"],
+      "reviewState": "needs_review",
+      "lastAudit": "2026-10-23T02:30:00Z",
+      "facts": [
+        "Synthetic development product",
+        "Material: silver (fixture only; not a live product claim)"
+      ],
+      "checklist": [
+        {
+          "label": "Descriptive product title",
+          "passed": true
+        },
+        {
+          "label": "Unique meta description",
+          "passed": true
+        },
+        {
+          "label": "Descriptive image alt text",
+          "passed": false
+        }
+      ]
+    },
+    {
+      "id": "DEMO-003",
+      "title": "Demo · Silver pendant",
+      "url": "https://ratniva.com/products/demo-silver-pendant",
+      "productType": "Pendants",
+      "score": 64,
+      "issues": ["missing-title"],
+      "reviewState": "needs_review",
+      "lastAudit": "2026-10-23T02:30:00Z",
+      "facts": [
+        "Synthetic development product",
+        "Material: silver (fixture only; not a live product claim)"
+      ],
+      "checklist": [
+        {
+          "label": "Descriptive product title",
+          "passed": true
+        },
+        {
+          "label": "Unique meta description",
+          "passed": true
+        },
+        {
+          "label": "Descriptive image alt text",
+          "passed": true
+        }
+      ]
+    },
+    {
+      "id": "DEMO-004",
+      "title": "Demo · Fine silver bracelet",
+      "url": "https://ratniva.com/products/demo-silver-bracelet",
+      "productType": "Bracelets",
+      "score": 96,
+      "issues": [],
+      "reviewState": "draft",
+      "lastAudit": "2026-10-23T02:30:00Z",
+      "facts": [
+        "Synthetic development product",
+        "Material: silver (fixture only; not a live product claim)"
+      ],
+      "checklist": [
+        {
+          "label": "Descriptive product title",
+          "passed": true
+        },
+        {
+          "label": "Unique meta description",
+          "passed": true
+        },
+        {
+          "label": "Descriptive image alt text",
+          "passed": true
+        }
+      ]
+    }
+  ],
+  "recommendations": [
+    {
+      "id": "DEMO-P001",
+      "targetKind": "product",
+      "targetUrl": "https://ratniva.com/products/demo-silver-ring",
+      "reason": "Add a factual, useful meta description.",
+      "risk": 1,
+      "status": "needs_review",
+      "createdAt": "2026-10-21T02:30:00Z",
+      "impact": 5,
+      "confidence": 5,
+      "effort": 1,
+      "fieldChanges": [
+        {
+          "field": "seo.description",
+          "before": null,
+          "after": "Explore a minimal silver ring from Ratniva. Review product details to find your preferred style."
+        }
+      ],
+      "testPlan": "Verify all claims against the product, preview the snippet, then compare completed 7/28-day GSC windows privately."
+    },
+    {
+      "id": "DEMO-P002",
+      "targetKind": "product",
+      "targetUrl": "https://ratniva.com/products/demo-silver-hoops",
+      "reason": "Review the product summary for clarity.",
+      "risk": 2,
+      "status": "needs_review",
+      "createdAt": "2026-10-21T02:30:00Z",
+      "impact": 4,
+      "confidence": 5,
+      "effort": 2,
+      "fieldChanges": [
+        {
+          "field": "seo.description",
+          "before": "Silver hoops.",
+          "after": "Explore everyday silver hoops from Ratniva, with product details to help you choose."
+        }
+      ],
+      "testPlan": "Verify all claims against the product, preview the snippet, then compare completed 7/28-day GSC windows privately."
+    },
+    {
+      "id": "DEMO-P003",
+      "targetKind": "product",
+      "targetUrl": "https://ratniva.com/products/demo-silver-pendant",
+      "reason": "Add a descriptive product SEO title.",
+      "risk": 3,
+      "status": "needs_review",
+      "createdAt": "2026-10-21T02:30:00Z",
+      "impact": 3,
+      "confidence": 5,
+      "effort": 3,
+      "fieldChanges": [
+        {
+          "field": "seo.title",
+          "before": null,
+          "after": "Silver Pendant | Ratniva"
+        }
+      ],
+      "testPlan": "Verify all claims against the product, preview the snippet, then compare completed 7/28-day GSC windows privately."
+    }
+  ],
+  "runs": [
+    {
+      "runId": "DEMO-20261023",
+      "startedAt": "2026-10-23T02:30:00Z",
+      "finishedAt": "2026-10-23T02:30:02Z",
+      "status": "skipped",
+      "jobName": "Demo fixture generation",
+      "sourceStatuses": [
+        {
+          "name": "gsc",
+          "status": "not_configured",
+          "message": "DEMO fixture; live source is not connected."
+        },
+        {
+          "name": "shopify",
+          "status": "not_configured",
+          "message": "DEMO fixture; live source is not connected."
+        },
+        {
+          "name": "pagespeed",
+          "status": "not_configured",
+          "message": "DEMO fixture; live source is not connected."
+        },
+        {
+          "name": "crawler",
+          "status": "not_configured",
+          "message": "DEMO fixture; live source is not connected."
+        },
+        {
+          "name": "merchant_manual",
+          "status": "not_configured",
+          "message": "DEMO fixture; live source is not connected."
+        }
+      ],
+      "issueCounts": {
+        "critical": 0,
+        "high": 3,
+        "medium": 2,
+        "low": 1
+      }
+    }
+  ],
+  "publishingEvents": [],
+  "publicSafeKpis": [
+    {
+      "label": "Pages checked",
+      "value": 48,
+      "asOf": "2026-10-23T02:30:00Z"
+    },
+    {
+      "label": "High severity issues",
+      "value": 3,
+      "asOf": "2026-10-23T02:30:00Z"
+    },
+    {
+      "label": "Product SEO completion",
+      "value": 80,
+      "asOf": "2026-10-23T02:30:00Z",
+      "unit": "%"
+    },
+    {
+      "label": "Awaiting review",
+      "value": 3,
+      "asOf": "2026-10-23T02:30:00Z"
+    }
+  ],
+  "healthHistory": [
+    {
+      "date": "2026-07-26",
+      "score": 55,
+      "pagesChecked": 40
+    },
+    {
+      "date": "2026-07-27",
+      "score": 56,
+      "pagesChecked": 40
+    },
+    {
+      "date": "2026-07-28",
+      "score": 57,
+      "pagesChecked": 40
+    },
+    {
+      "date": "2026-07-29",
+      "score": 59,
+      "pagesChecked": 40
+    },
+    {
+      "date": "2026-07-30",
+      "score": 60,
+      "pagesChecked": 40
+    },
+    {
+      "date": "2026-07-31",
+      "score": 56,
+      "pagesChecked": 40
+    },
+    {
+      "date": "2026-08-01",
+      "score": 58,
+      "pagesChecked": 40
+    },
+    {
+      "date": "2026-08-02",
+      "score": 59,
+      "pagesChecked": 40
+    },
+    {
+      "date": "2026-08-03",
+      "score": 60,
+      "pagesChecked": 40
+    },
+    {
+      "date": "2026-08-04",
+      "score": 62,
+      "pagesChecked": 40
+    },
+    {
+      "date": "2026-08-05",
+      "score": 58,
+      "pagesChecked": 40
+    },
+    {
+      "date": "2026-08-06",
+      "score": 59,
+      "pagesChecked": 41
+    },
+    {
+      "date": "2026-08-07",
+      "score": 61,
+      "pagesChecked": 41
+    },
+    {
+      "date": "2026-08-08",
+      "score": 62,
+      "pagesChecked": 41
+    },
+    {
+      "date": "2026-08-09",
+      "score": 63,
+      "pagesChecked": 41
+    },
+    {
+      "date": "2026-08-10",
+      "score": 60,
+      "pagesChecked": 41
+    },
+    {
+      "date": "2026-08-11",
+      "score": 61,
+      "pagesChecked": 41
+    },
+    {
+      "date": "2026-08-12",
+      "score": 62,
+      "pagesChecked": 41
+    },
+    {
+      "date": "2026-08-13",
+      "score": 64,
+      "pagesChecked": 41
+    },
+    {
+      "date": "2026-08-14",
+      "score": 65,
+      "pagesChecked": 41
+    },
+    {
+      "date": "2026-08-15",
+      "score": 61,
+      "pagesChecked": 41
+    },
+    {
+      "date": "2026-08-16",
+      "score": 63,
+      "pagesChecked": 41
+    },
+    {
+      "date": "2026-08-17",
+      "score": 64,
+      "pagesChecked": 42
+    },
+    {
+      "date": "2026-08-18",
+      "score": 65,
+      "pagesChecked": 42
+    },
+    {
+      "date": "2026-08-19",
+      "score": 67,
+      "pagesChecked": 42
+    },
+    {
+      "date": "2026-08-20",
+      "score": 63,
+      "pagesChecked": 42
+    },
+    {
+      "date": "2026-08-21",
+      "score": 64,
+      "pagesChecked": 42
+    },
+    {
+      "date": "2026-08-22",
+      "score": 66,
+      "pagesChecked": 42
+    },
+    {
+      "date": "2026-08-23",
+      "score": 67,
+      "pagesChecked": 42
+    },
+    {
+      "date": "2026-08-24",
+      "score": 68,
+      "pagesChecked": 42
+    },
+    {
+      "date": "2026-08-25",
+      "score": 65,
+      "pagesChecked": 42
+    },
+    {
+      "date": "2026-08-26",
+      "score": 66,
+      "pagesChecked": 42
+    },
+    {
+      "date": "2026-08-27",
+      "score": 67,
+      "pagesChecked": 42
+    },
+    {
+      "date": "2026-08-28",
+      "score": 69,
+      "pagesChecked": 43
+    },
+    {
+      "date": "2026-08-29",
+      "score": 70,
+      "pagesChecked": 43
+    },
+    {
+      "date": "2026-08-30",
+      "score": 66,
+      "pagesChecked": 43
+    },
+    {
+      "date": "2026-08-31",
+      "score": 68,
+      "pagesChecked": 43
+    },
+    {
+      "date": "2026-09-01",
+      "score": 69,
+      "pagesChecked": 43
+    },
+    {
+      "date": "2026-09-02",
+      "score": 70,
+      "pagesChecked": 43
+    },
+    {
+      "date": "2026-09-03",
+      "score": 72,
+      "pagesChecked": 43
+    },
+    {
+      "date": "2026-09-04",
+      "score": 68,
+      "pagesChecked": 43
+    },
+    {
+      "date": "2026-09-05",
+      "score": 69,
+      "pagesChecked": 43
+    },
+    {
+      "date": "2026-09-06",
+      "score": 71,
+      "pagesChecked": 43
+    },
+    {
+      "date": "2026-09-07",
+      "score": 72,
+      "pagesChecked": 43
+    },
+    {
+      "date": "2026-09-08",
+      "score": 73,
+      "pagesChecked": 44
+    },
+    {
+      "date": "2026-09-09",
+      "score": 70,
+      "pagesChecked": 44
+    },
+    {
+      "date": "2026-09-10",
+      "score": 71,
+      "pagesChecked": 44
+    },
+    {
+      "date": "2026-09-11",
+      "score": 72,
+      "pagesChecked": 44
+    },
+    {
+      "date": "2026-09-12",
+      "score": 74,
+      "pagesChecked": 44
+    },
+    {
+      "date": "2026-09-13",
+      "score": 75,
+      "pagesChecked": 44
+    },
+    {
+      "date": "2026-09-14",
+      "score": 71,
+      "pagesChecked": 44
+    },
+    {
+      "date": "2026-09-15",
+      "score": 73,
+      "pagesChecked": 44
+    },
+    {
+      "date": "2026-09-16",
+      "score": 74,
+      "pagesChecked": 44
+    },
+    {
+      "date": "2026-09-17",
+      "score": 75,
+      "pagesChecked": 44
+    },
+    {
+      "date": "2026-09-18",
+      "score": 77,
+      "pagesChecked": 44
+    },
+    {
+      "date": "2026-09-19",
+      "score": 73,
+      "pagesChecked": 45
+    },
+    {
+      "date": "2026-09-20",
+      "score": 74,
+      "pagesChecked": 45
+    },
+    {
+      "date": "2026-09-21",
+      "score": 76,
+      "pagesChecked": 45
+    },
+    {
+      "date": "2026-09-22",
+      "score": 77,
+      "pagesChecked": 45
+    },
+    {
+      "date": "2026-09-23",
+      "score": 78,
+      "pagesChecked": 45
+    },
+    {
+      "date": "2026-09-24",
+      "score": 75,
+      "pagesChecked": 45
+    },
+    {
+      "date": "2026-09-25",
+      "score": 76,
+      "pagesChecked": 45
+    },
+    {
+      "date": "2026-09-26",
+      "score": 77,
+      "pagesChecked": 45
+    },
+    {
+      "date": "2026-09-27",
+      "score": 79,
+      "pagesChecked": 45
+    },
+    {
+      "date": "2026-09-28",
+      "score": 80,
+      "pagesChecked": 45
+    },
+    {
+      "date": "2026-09-29",
+      "score": 76,
+      "pagesChecked": 45
+    },
+    {
+      "date": "2026-09-30",
+      "score": 78,
+      "pagesChecked": 46
+    },
+    {
+      "date": "2026-10-01",
+      "score": 79,
+      "pagesChecked": 46
+    },
+    {
+      "date": "2026-10-02",
+      "score": 80,
+      "pagesChecked": 46
+    },
+    {
+      "date": "2026-10-03",
+      "score": 82,
+      "pagesChecked": 46
+    },
+    {
+      "date": "2026-10-04",
+      "score": 78,
+      "pagesChecked": 46
+    },
+    {
+      "date": "2026-10-05",
+      "score": 79,
+      "pagesChecked": 46
+    },
+    {
+      "date": "2026-10-06",
+      "score": 81,
+      "pagesChecked": 46
+    },
+    {
+      "date": "2026-10-07",
+      "score": 82,
+      "pagesChecked": 46
+    },
+    {
+      "date": "2026-10-08",
+      "score": 83,
+      "pagesChecked": 46
+    },
+    {
+      "date": "2026-10-09",
+      "score": 80,
+      "pagesChecked": 46
+    },
+    {
+      "date": "2026-10-10",
+      "score": 81,
+      "pagesChecked": 46
+    },
+    {
+      "date": "2026-10-11",
+      "score": 82,
+      "pagesChecked": 47
+    },
+    {
+      "date": "2026-10-12",
+      "score": 84,
+      "pagesChecked": 47
+    },
+    {
+      "date": "2026-10-13",
+      "score": 84,
+      "pagesChecked": 47
+    },
+    {
+      "date": "2026-10-14",
+      "score": 81,
+      "pagesChecked": 47
+    },
+    {
+      "date": "2026-10-15",
+      "score": 83,
+      "pagesChecked": 47
+    },
+    {
+      "date": "2026-10-16",
+      "score": 84,
+      "pagesChecked": 47
+    },
+    {
+      "date": "2026-10-17",
+      "score": 84,
+      "pagesChecked": 47
+    },
+    {
+      "date": "2026-10-18",
+      "score": 84,
+      "pagesChecked": 47
+    },
+    {
+      "date": "2026-10-19",
+      "score": 83,
+      "pagesChecked": 47
+    },
+    {
+      "date": "2026-10-20",
+      "score": 84,
+      "pagesChecked": 47
+    },
+    {
+      "date": "2026-10-21",
+      "score": 84,
+      "pagesChecked": 47
+    },
+    {
+      "date": "2026-10-22",
+      "score": 84,
+      "pagesChecked": 48
+    },
+    {
+      "date": "2026-10-23",
+      "score": 84,
+      "pagesChecked": 48
+    }
+  ],
+  "keywordClusters": [
+    {
+      "keyword": "silver rings for women",
+      "intent": "Commercial",
+      "landingPage": "https://ratniva.com/collections/demo-rings",
+      "branded": false,
+      "nextStep": "Research hypothesis: validate demand and catalogue fit using private GSC data."
+    },
+    {
+      "keyword": "silver earrings for women",
+      "intent": "Commercial",
+      "landingPage": "https://ratniva.com/collections/demo-earrings",
+      "branded": false,
+      "nextStep": "Research hypothesis: validate demand and catalogue fit using private GSC data."
+    },
+    {
+      "keyword": "925 sterling silver jewellery",
+      "intent": "Commercial",
+      "landingPage": "https://ratniva.com/collections/all",
+      "branded": false,
+      "nextStep": "Research hypothesis: validate demand and catalogue fit using private GSC data."
+    },
+    {
+      "keyword": "how to clean sterling silver",
+      "intent": "Informational",
+      "landingPage": "https://ratniva.com/pages/demo-care",
+      "branded": false,
+      "nextStep": "Research hypothesis: validate demand and catalogue fit using private GSC data."
+    }
+  ],
+  "readiness": [
+    {
+      "label": "Helpful care guidance",
+      "status": "needs_review",
+      "evidence": "Synthetic example: care instructions need fact checking."
+    },
+    {
+      "label": "Consistent brand facts",
+      "status": "not_checked",
+      "evidence": "No live pages have been inspected."
+    },
+    {
+      "label": "Supported structured data",
+      "status": "not_checked",
+      "evidence": "Schema presence does not establish validity or rich-result eligibility."
+    },
+    {
+      "label": "Product questions answered",
+      "status": "needs_review",
+      "evidence": "Review sizing, material, and care information for usefulness."
+    }
+  ],
+  "competitors": [
+    {
+      "name": "GIVA",
+      "url": "https://www.giva.co",
+      "observation": null,
+      "verifiedAt": null
+    },
+    {
+      "name": "Palmonas",
+      "url": "https://www.palmonas.com",
+      "observation": null,
+      "verifiedAt": null
+    },
+    {
+      "name": "Zavya",
+      "url": "https://www.zavya.co",
+      "observation": null,
+      "verifiedAt": null
+    }
+  ]
+}

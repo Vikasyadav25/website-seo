@@ -1,0 +1,58 @@
+import {
+  LayoutDashboard,
+  ChartNoAxesCombined,
+  KeyRound,
+  Gem,
+  ScanLine,
+  Sparkles,
+  Telescope,
+  ListChecks,
+  ShieldCheck,
+  Send,
+  Files,
+  Settings2,
+} from "lucide-react";
+export const navigation = [
+  { path: "/", label: "Overview", icon: LayoutDashboard, group: "Workspace" },
+  {
+    path: "/search",
+    label: "Search performance",
+    icon: ChartNoAxesCombined,
+    group: "Workspace",
+  },
+  { path: "/keywords", label: "Keywords", icon: KeyRound, group: "Workspace" },
+  { path: "/products", label: "Product SEO", icon: Gem, group: "Workspace" },
+  {
+    path: "/technical",
+    label: "Technical SEO",
+    icon: ScanLine,
+    group: "Workspace",
+  },
+  {
+    path: "/geo",
+    label: "GEO / AI readiness",
+    icon: Sparkles,
+    group: "Workspace",
+  },
+  {
+    path: "/competitors",
+    label: "Competitors",
+    icon: Telescope,
+    group: "Workspace",
+  },
+  {
+    path: "/recommendations",
+    label: "Recommendations",
+    icon: ListChecks,
+    group: "Actions",
+  },
+  {
+    path: "/approvals",
+    label: "Approvals",
+    icon: ShieldCheck,
+    group: "Actions",
+  },
+  { path: "/publishing", label: "Publishing", icon: Send, group: "Actions" },
+  { path: "/reports", label: "Reports", icon: Files, group: "Manage" },
+  { path: "/settings", label: "Settings", icon: Settings2, group: "Manage" },
+];

@@ -1,0 +1,9 @@
+site_url: https://ratniva.com
+shopify_api_version: '2026-07'
+max_catalog_pages: 10
+crawl_max_pages: 8
+crawl_delay_seconds: 1.5
+sample_paths:
+  - /
+  - /collections/all
+publish_public_audit_metrics: false

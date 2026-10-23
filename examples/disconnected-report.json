@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "mode": "demo",
+  "generatedAt": "2026-10-23T02:30:00Z",
+  "siteUrl": "https://ratniva.com",
+  "repositoryUrl": null,
+  "latestRun": null,
+  "sourceHealth": [
+    {
+      "name": "gsc",
+      "status": "not_configured",
+      "message": "DEMO fixture; live source is not connected."
+    },
+    {
+      "name": "shopify",
+      "status": "not_configured",
+      "message": "DEMO fixture; live source is not connected."
+    },
+    {
+      "name": "pagespeed",
+      "status": "not_configured",
+      "message": "DEMO fixture; live source is not connected."
+    },
+    {
+      "name": "crawler",
+      "status": "not_configured",
+      "message": "DEMO fixture; live source is not connected."
+    },
+    {
+      "name": "merchant_manual",
+      "status": "not_configured",
+      "message": "DEMO fixture; live source is not connected."
+    }
+  ],
+  "issues": [],
+  "productAuditSummaries": [],
+  "recommendations": [],
+  "runs": [],
+  "publishingEvents": [],
+  "publicSafeKpis": [],
+  "healthHistory": [],
+  "keywordClusters": [],
+  "readiness": [],
+  "competitors": []
+}

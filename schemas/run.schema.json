@@ -1,0 +1,91 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "runId": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "startedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "finishedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "enum": ["success", "partial", "failed", "skipped"]
+    },
+    "jobName": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "sourceStatuses": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "enum": [
+              "gsc",
+              "shopify",
+              "pagespeed",
+              "crawler",
+              "merchant_manual"
+            ]
+          },
+          "status": {
+            "enum": ["connected", "not_configured", "failed", "stale"]
+          },
+          "lastSyncedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": ["name", "status"]
+      }
+    },
+    "issueCounts": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "critical": {
+          "type": "number",
+          "minimum": 0
+        },
+        "high": {
+          "type": "number",
+          "minimum": 0
+        },
+        "medium": {
+          "type": "number",
+          "minimum": 0
+        },
+        "low": {
+          "type": "number",
+          "minimum": 0
+        }
+      },
+      "required": ["critical", "high", "medium", "low"]
+    },
+    "githubRunUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    }
+  },
+  "required": [
+    "runId",
+    "startedAt",
+    "status",
+    "jobName",
+    "sourceStatuses",
+    "issueCounts"
+  ]
+}

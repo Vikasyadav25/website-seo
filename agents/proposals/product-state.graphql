@@ -1,0 +1,7 @@
+query ProductState($id: ID!) {
+  product(id: $id) {
+    id
+    updatedAt
+    seo { title description }
+  }
+}

@@ -1,0 +1,695 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {
+      "const": 1
+    },
+    "mode": {
+      "enum": ["demo", "connected"]
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "siteUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "repositoryUrl": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "uri",
+          "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"
+        }
+      ]
+    },
+    "latestRun": {
+      "anyOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "runId": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "startedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "finishedAt": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "status": {
+              "enum": ["success", "partial", "failed", "skipped"]
+            },
+            "jobName": {
+              "type": "string",
+              "maxLength": 2000
+            },
+            "sourceStatuses": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "name": {
+                    "enum": [
+                      "gsc",
+                      "shopify",
+                      "pagespeed",
+                      "crawler",
+                      "merchant_manual"
+                    ]
+                  },
+                  "status": {
+                    "enum": ["connected", "not_configured", "failed", "stale"]
+                  },
+                  "lastSyncedAt": {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  "message": {
+                    "type": "string",
+                    "maxLength": 2000
+                  }
+                },
+                "required": ["name", "status"]
+              }
+            },
+            "issueCounts": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "critical": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "high": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "medium": {
+                  "type": "number",
+                  "minimum": 0
+                },
+                "low": {
+                  "type": "number",
+                  "minimum": 0
+                }
+              },
+              "required": ["critical", "high", "medium", "low"]
+            },
+            "githubRunUrl": {
+              "type": "string",
+              "format": "uri",
+              "pattern": "^https://"
+            }
+          },
+          "required": [
+            "runId",
+            "startedAt",
+            "status",
+            "jobName",
+            "sourceStatuses",
+            "issueCounts"
+          ]
+        }
+      ]
+    },
+    "sourceHealth": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "enum": [
+              "gsc",
+              "shopify",
+              "pagespeed",
+              "crawler",
+              "merchant_manual"
+            ]
+          },
+          "status": {
+            "enum": ["connected", "not_configured", "failed", "stale"]
+          },
+          "lastSyncedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "message": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": ["name", "status"]
+      }
+    },
+    "publicSafeKpis": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "enum": [
+              "Pages checked",
+              "High severity issues",
+              "Product SEO completion",
+              "Awaiting review"
+            ]
+          },
+          "value": {
+            "type": "number",
+            "minimum": 0
+          },
+          "unit": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "asOf": {
+            "type": "string",
+            "format": "date-time"
+          }
+        },
+        "required": ["label", "value", "asOf"]
+      }
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "source": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "severity": {
+            "enum": ["critical", "high", "medium", "low"]
+          },
+          "targetUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "discoveredAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "lastVerifiedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "recommendation": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "source",
+          "category",
+          "severity",
+          "targetUrl",
+          "evidence",
+          "discoveredAt",
+          "lastVerifiedAt",
+          "recommendation"
+        ]
+      }
+    },
+    "productAuditSummaries": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "title": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "productType": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          },
+          "reviewState": {
+            "enum": [
+              "draft",
+              "needs_review",
+              "approved",
+              "rejected",
+              "applied",
+              "failed",
+              "rolled_back"
+            ]
+          },
+          "lastAudit": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "facts": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          },
+          "checklist": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "label": {
+                  "type": "string",
+                  "maxLength": 2000
+                },
+                "passed": {
+                  "type": "boolean"
+                }
+              },
+              "required": ["label", "passed"]
+            }
+          }
+        },
+        "required": [
+          "id",
+          "title",
+          "url",
+          "productType",
+          "score",
+          "issues",
+          "reviewState",
+          "lastAudit",
+          "facts",
+          "checklist"
+        ]
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "targetKind": {
+            "enum": ["product", "collection", "page"]
+          },
+          "targetUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "reason": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "risk": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "status": {
+            "enum": [
+              "draft",
+              "needs_review",
+              "approved",
+              "rejected",
+              "applied",
+              "failed",
+              "rolled_back"
+            ]
+          },
+          "prUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "impact": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "confidence": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 5
+          },
+          "effort": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "fieldChanges": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "field": {
+                  "enum": ["seo.title", "seo.description"]
+                },
+                "before": {
+                  "type": ["string", "null"],
+                  "maxLength": 2000
+                },
+                "after": {
+                  "type": ["string", "null"],
+                  "maxLength": 2000
+                }
+              },
+              "required": ["field", "before", "after"]
+            }
+          },
+          "testPlan": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": [
+          "id",
+          "targetKind",
+          "targetUrl",
+          "reason",
+          "risk",
+          "status",
+          "createdAt",
+          "impact",
+          "confidence",
+          "effort",
+          "fieldChanges",
+          "testPlan"
+        ]
+      }
+    },
+    "runs": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "runId": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "startedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "finishedAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "status": {
+            "enum": ["success", "partial", "failed", "skipped"]
+          },
+          "jobName": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "sourceStatuses": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "name": {
+                  "enum": [
+                    "gsc",
+                    "shopify",
+                    "pagespeed",
+                    "crawler",
+                    "merchant_manual"
+                  ]
+                },
+                "status": {
+                  "enum": ["connected", "not_configured", "failed", "stale"]
+                },
+                "lastSyncedAt": {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                "message": {
+                  "type": "string",
+                  "maxLength": 2000
+                }
+              },
+              "required": ["name", "status"]
+            }
+          },
+          "issueCounts": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "critical": {
+                "type": "number",
+                "minimum": 0
+              },
+              "high": {
+                "type": "number",
+                "minimum": 0
+              },
+              "medium": {
+                "type": "number",
+                "minimum": 0
+              },
+              "low": {
+                "type": "number",
+                "minimum": 0
+              }
+            },
+            "required": ["critical", "high", "medium", "low"]
+          },
+          "githubRunUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          }
+        },
+        "required": [
+          "runId",
+          "startedAt",
+          "status",
+          "jobName",
+          "sourceStatuses",
+          "issueCounts"
+        ]
+      }
+    },
+    "healthHistory": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "date": {
+            "type": "string",
+            "format": "date"
+          },
+          "score": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 100
+          },
+          "pagesChecked": {
+            "type": "number",
+            "minimum": 0
+          }
+        },
+        "required": ["date", "score", "pagesChecked"]
+      }
+    },
+    "keywordClusters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "keyword": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "intent": {
+            "enum": ["Commercial", "Informational"]
+          },
+          "landingPage": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "branded": {
+            "type": "boolean"
+          },
+          "nextStep": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": ["keyword", "intent", "landingPage", "branded", "nextStep"]
+      }
+    },
+    "readiness": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "status": {
+            "enum": ["verified", "needs_review", "not_checked"]
+          },
+          "evidence": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        },
+        "required": ["label", "status", "evidence"]
+      }
+    },
+    "competitors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          },
+          "observation": {
+            "type": ["string", "null"],
+            "maxLength": 2000
+          },
+          "verifiedAt": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": ["name", "url", "observation", "verifiedAt"]
+      }
+    },
+    "publishingEvents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "string",
+            "maxLength": 2000
+          },
+          "status": {
+            "enum": ["applied", "failed", "rolled_back"]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "fields": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "maxLength": 2000
+            }
+          },
+          "jobUrl": {
+            "type": "string",
+            "format": "uri",
+            "pattern": "^https://"
+          }
+        },
+        "required": ["id", "status", "timestamp", "fields", "jobUrl"]
+      }
+    }
+  },
+  "required": [
+    "schemaVersion",
+    "mode",
+    "generatedAt",
+    "siteUrl",
+    "repositoryUrl",
+    "latestRun",
+    "sourceHealth",
+    "publicSafeKpis",
+    "issues",
+    "productAuditSummaries",
+    "recommendations",
+    "runs",
+    "healthHistory",
+    "keywordClusters",
+    "readiness",
+    "competitors",
+    "publishingEvents"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PublicDashboardReport"
+}

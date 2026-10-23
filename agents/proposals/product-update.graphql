@@ -1,0 +1,6 @@
+mutation ApprovedSeoUpdate($product: ProductUpdateInput!) {
+  productUpdate(product: $product) {
+    product { id updatedAt seo { title description } }
+    userErrors { field message }
+  }
+}

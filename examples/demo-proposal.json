@@ -1,0 +1,22 @@
+{
+  "id": "DEMO-P001",
+  "targetKind": "product",
+  "targetUrl": "https://ratniva.com/products/demo-silver-ring",
+  "reason": "Add a factual, useful meta description.",
+  "risk": 1,
+  "status": "needs_review",
+  "createdAt": "2026-10-21T02:30:00Z",
+  "impact": 5,
+  "confidence": 5,
+  "effort": 1,
+  "fieldChanges": [
+    {
+      "field": "seo.description",
+      "before": null,
+      "after": "Explore a minimal silver ring from Ratniva. Review product details to find your preferred style."
+    }
+  ],
+  "targetGid": "gid://shopify/Product/1",
+  "baselineHash": "053805d246673abc026355199037a1adc43f310303f86e839a40417fc1ee4c41",
+  "evidenceIds": ["7520e53b8390"]
+}

@@ -1,0 +1,110 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "targetKind": {
+      "enum": ["product"]
+    },
+    "targetGid": {
+      "type": "string",
+      "pattern": "^gid://shopify/Product/[0-9]+$"
+    },
+    "targetUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "fieldChanges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "field": {
+            "enum": ["seo.title", "seo.description"]
+          },
+          "before": {
+            "type": ["string", "null"],
+            "maxLength": 2000
+          },
+          "after": {
+            "type": ["string", "null"],
+            "maxLength": 2000
+          }
+        },
+        "required": ["field", "before", "after"]
+      }
+    },
+    "baselineHash": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "reason": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "evidenceIds": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "maxLength": 2000
+      }
+    },
+    "impact": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "confidence": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "effort": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 5
+    },
+    "risk": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5
+    },
+    "status": {
+      "enum": [
+        "draft",
+        "needs_review",
+        "approved",
+        "rejected",
+        "applied",
+        "failed",
+        "rolled_back"
+      ]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "id",
+    "targetKind",
+    "targetGid",
+    "targetUrl",
+    "fieldChanges",
+    "baselineHash",
+    "reason",
+    "evidenceIds",
+    "impact",
+    "confidence",
+    "effort",
+    "risk",
+    "status",
+    "createdAt"
+  ],
+  "$schema": "http://json-schema.org/draft-07/schema#"
+}

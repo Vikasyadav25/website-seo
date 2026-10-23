@@ -1,0 +1,71 @@
+name: Publish approved
+on:
+  workflow_dispatch:
+    inputs:
+      proposal_id:
+        description: Exact maintainer-approved proposal ID
+        required: true
+      proposal_hash:
+        description: Canonical SHA-256 of exact approved proposal JSON
+        required: true
+      dry_run:
+        description: Verify only; make no Shopify change
+        type: boolean
+        default: true
+permissions:
+  contents: read
+concurrency:
+  group: shopify-production
+  cancel-in-progress: false
+jobs:
+  publish:
+    if: github.ref == 'refs/heads/main'
+    environment: shopify-production
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      PUBLISH_OPERATORS: ${{ vars.PUBLISH_OPERATORS }}
+      PUBLISH_ENABLED: ${{ vars.PUBLISH_ENABLED || 'false' }}
+      ENABLE_SHOPIFY_WRITES: ${{ vars.ENABLE_SHOPIFY_WRITES || 'false' }}
+      DRY_RUN: ${{ inputs.dry_run && 'true' || 'false' }}
+      APPROVED_PROPOSAL_JSON: ${{ secrets.APPROVED_PROPOSAL_JSON }}
+      SHOPIFY_STORE_DOMAIN: ${{ vars.SHOPIFY_STORE_DOMAIN }}
+      SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ADMIN_ACCESS_TOKEN }}
+      ROLLBACK_ENCRYPTION_KEY: ${{ secrets.ROLLBACK_ENCRYPTION_KEY }}
+      PROPOSAL_ID: ${{ inputs.proposal_id }}
+      PROPOSAL_HASH: ${{ inputs.proposal_hash }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          ref: main
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r requirements.txt
+      - name: Validate exact approval and current fields without writing
+        run: python -m agents.proposals.apply --proposal-id "$PROPOSAL_ID" --proposal-hash "$PROPOSAL_HASH" --stage dry-run
+      - name: Capture encrypted originals before any write
+        if: inputs.dry_run == false
+        id: prepare
+        run: python -m agents.proposals.apply --proposal-id "$PROPOSAL_ID" --proposal-hash "$PROPOSAL_HASH" --stage prepare
+      - name: Persist encrypted rollback capture before applying
+        if: steps.prepare.outputs.prepared == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: rollback-${{ github.run_id }}-${{ github.run_attempt }}
+          path: private/rollback.enc
+          if-no-files-found: error
+          retention-days: 30
+      - name: Apply exactly approved SEO fields
+        if: steps.prepare.outputs.prepared == 'true'
+        run: python -m agents.proposals.apply --proposal-id "$PROPOSAL_ID" --proposal-hash "$PROPOSAL_HASH" --stage apply
+        env:
+          ROLLBACK_CAPTURE_UPLOADED: "true"
+      - name: Save sanitized event metadata
+        if: always() && steps.prepare.outputs.prepared == 'true'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: publication-event-${{ github.run_id }}-${{ github.run_attempt }}
+          path: private/rollback.event.json
+          retention-days: 30

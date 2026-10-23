@@ -1,0 +1,8 @@
+node_modules
+dist
+pnpm-lock.yaml
+package-lock.json
+private
+*.py
+playwright-report
+test-results

@@ -1,0 +1,53 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "source": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "category": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "severity": {
+      "enum": ["critical", "high", "medium", "low"]
+    },
+    "targetUrl": {
+      "type": "string",
+      "format": "uri",
+      "pattern": "^https://"
+    },
+    "evidence": {
+      "type": "string",
+      "maxLength": 2000
+    },
+    "discoveredAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "lastVerifiedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "recommendation": {
+      "type": "string",
+      "maxLength": 2000
+    }
+  },
+  "required": [
+    "id",
+    "source",
+    "category",
+    "severity",
+    "targetUrl",
+    "evidence",
+    "discoveredAt",
+    "lastVerifiedAt",
+    "recommendation"
+  ]
+}
