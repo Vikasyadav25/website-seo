@@ -26,6 +26,13 @@ modules, page-level AEO evidence, and a real assisted silver-care content bundle
 Local verification includes API failure/fork boundaries, article/assets validation,
 draft exports and desktop/360px browser coverage. See [agent workflow](AGENT_WORKFLOW.md)
 for the exact automated/assisted split and remaining citation/rank/publication gaps.
+The release passed [hosted CI](https://github.com/Vikasyadav25/website-seo/actions/runs/40068728797),
+[production audit](https://github.com/Vikasyadav25/website-seo/actions/runs/40068739733),
+and [Pages deployment](https://github.com/Vikasyadav25/website-seo/actions/runs/40068783197).
+Live desktop and 360px checks verified five modules, eight page-check rows, two
+loaded illustrations, working article downloads, and no page errors/overflow.
+Local checks passed: lint/typecheck, 42 frontend tests, 77 Python tests, 18 browser
+tests, public validation, build and deployable credential scan.
 
 - Main branch protection, protected Shopify reviewer configuration, and scheduled
   run quota/access verification. Hosted CI and Pages deployment have passed; the

@@ -1,14 +1,18 @@
 # Public website audit — 23 October 2026
 
-Collected at 11:10 IST in
-[production audit 40067174050](https://github.com/Vikasyadav25/website-seo/actions/runs/40067174050).
+Collected at 11:34 IST in
+[production audit 40068739733](https://github.com/Vikasyadav25/website-seo/actions/runs/40068739733).
 Shopify client-credentials authentication and catalog reads succeeded; the public
-crawler also connected. [Pages deployment](https://github.com/Vikasyadav25/website-seo/actions/runs/40067225635)
+crawler also connected. [Pages deployment](https://github.com/Vikasyadav25/website-seo/actions/runs/40068783197)
 passed. The live dashboard was verified in a 360px browser: the new report,
 Shopify connection, findings, no browser errors and no horizontal overflow.
 
 The bundled `web/public/data/report.json` remains the earlier 23 October public
 crawl for local use. The hosted dashboard reads the newer validated Actions report.
+
+The updated report additionally contains eight sampled-page readiness records:
+title/description presence, JSON-LD presence, question headings and about/contact
+links. Presence checks are not schema validation or search-result wins.
 
 ## Findings
 
