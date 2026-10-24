@@ -2,7 +2,7 @@ import { NavLink, useLocation } from "react-router-dom";
 import { navigation } from "../app/navigation";
 import type { PublicReport } from "../types";
 
-const primaryPaths = new Set(["/", "/technical", "/reports", "/settings"]);
+const primaryPaths = new Set(["/", "/settings"]);
 const agentPaths = new Set([
   "/keywords",
   "/content",
@@ -40,7 +40,7 @@ export function Navigation({
   return (
     <nav aria-label="Main navigation">
       <div className="nav-group">
-        <p>Daily work</p>
+        <p>Workspace</p>
         {navigation.filter((item) => primaryPaths.has(item.path)).map(itemLink)}
       </div>
       <div className="nav-group">

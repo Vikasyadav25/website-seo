@@ -85,91 +85,12 @@ export function AgentActivity({
     >
       <div className="section-heading">
         <div>
-          <span className="eyebrow">Agent activity</span>
+          <span className="eyebrow">Audit status</span>
           <h2 id="agent-activity-title">{heading}</h2>
         </div>
         <StatusBadge status={badge} />
       </div>
-      <p>{explanation}</p>
-      {activity.state === "verified" && (
-        <p className="small muted">
-          GitHub status checked: {dateTime(activity.checkedAt)}. Background
-          checks every 5 minutes.
-        </p>
-      )}
-      {run && (
-        <a
-          className="text-link"
-          href={run.url}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          View latest attempt #{run.id}
-        </a>
-      )}
-      <div className="agent-proof">
-        <div className="section-heading">
-          <h3>Last published audit</h3>
-          {latest && <StatusBadge status={latest.status} />}
-        </div>
-        <dl className="agent-proof-facts">
-          <div>
-            <dt>Finished</dt>
-            <dd>{dateTime(latest?.finishedAt)}</dd>
-          </div>
-          {Number.isFinite(duration) && duration >= 0 && (
-            <div>
-              <dt>Duration</dt>
-              <dd>{Math.round(duration / 1000)} seconds</dd>
-            </div>
-          )}
-          <div>
-            <dt>Store changes</dt>
-            <dd>
-              {report.publishingEvents.length
-                ? `${report.publishingEvents.length} published event records`
-                : "No published change records"}
-            </dd>
-          </div>
-        </dl>
-        {latest?.githubRunUrl && (
-          <a
-            className="text-link"
-            href={latest.githubRunUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            View published audit proof
-          </a>
-        )}
-        <details className="agent-source-details">
-          <summary>What the agent checked</summary>
-          <ul>
-            {report.sourceHealth
-              .filter((source) => source.name !== "merchant_manual")
-              .map((source) => (
-                <li key={source.name}>
-                  <div>
-                    <strong>{sourceNames[source.name]}</strong>
-                    <StatusBadge status={source.status} />
-                  </div>
-                  <p>{sourceEvidence(source)}</p>
-                  {source.lastSyncedAt && (
-                    <time
-                      className="micro muted"
-                      dateTime={source.lastSyncedAt}
-                    >
-                      Checked {dateTime(source.lastSyncedAt)}
-                    </time>
-                  )}
-                </li>
-              ))}
-          </ul>
-          <Link className="text-link" to="/settings">
-            Connection setup and details
-          </Link>
-        </details>
-      </div>
+      <p className="small muted">Last audit: {dateTime(latest?.finishedAt)}</p>
       <div className="agent-actions">
         <GitHubLink
           repository={report.repositoryUrl}
@@ -177,15 +98,94 @@ export function AgentActivity({
         >
           Run audit in GitHub
         </GitHubLink>
-        <span className="small muted">
-          Choose Run workflow, then production. Scheduled time: 08:00 IST;
-          schedules can be delayed.
-        </span>
       </div>
-      <p className="micro muted">
-        Refreshing this dashboard checks reports and status; it does not start
-        an audit or change Shopify.
-      </p>
+      <details className="agent-run-details">
+        <summary>Run details</summary>
+        <p>{explanation}</p>
+        {activity.state === "verified" && (
+          <p className="small muted">
+            GitHub status checked: {dateTime(activity.checkedAt)}. Background
+            checks every 5 minutes.
+          </p>
+        )}
+        {run && (
+          <a
+            className="text-link"
+            href={run.url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View latest attempt #{run.id}
+          </a>
+        )}
+        <div className="agent-proof">
+          <div className="section-heading">
+            <h3>Last published audit</h3>
+            {latest && <StatusBadge status={latest.status} />}
+          </div>
+          <dl className="agent-proof-facts">
+            <div>
+              <dt>Finished</dt>
+              <dd>{dateTime(latest?.finishedAt)}</dd>
+            </div>
+            {Number.isFinite(duration) && duration >= 0 && (
+              <div>
+                <dt>Duration</dt>
+                <dd>{Math.round(duration / 1000)} seconds</dd>
+              </div>
+            )}
+            <div>
+              <dt>Store changes</dt>
+              <dd>
+                {report.publishingEvents.length
+                  ? `${report.publishingEvents.length} published event records`
+                  : "No published change records"}
+              </dd>
+            </div>
+          </dl>
+          {latest?.githubRunUrl && (
+            <a
+              className="text-link"
+              href={latest.githubRunUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              View published audit proof
+            </a>
+          )}
+          <div className="agent-source-details">
+            <h3>Source checks</h3>
+            <ul>
+              {report.sourceHealth
+                .filter((source) => source.name !== "merchant_manual")
+                .map((source) => (
+                  <li key={source.name}>
+                    <div>
+                      <strong>{sourceNames[source.name]}</strong>
+                      <StatusBadge status={source.status} />
+                    </div>
+                    <p>{sourceEvidence(source)}</p>
+                    {source.lastSyncedAt && (
+                      <time
+                        className="micro muted"
+                        dateTime={source.lastSyncedAt}
+                      >
+                        Checked {dateTime(source.lastSyncedAt)}
+                      </time>
+                    )}
+                  </li>
+                ))}
+            </ul>
+            <Link className="text-link" to="/settings">
+              Connection setup and details
+            </Link>
+          </div>
+        </div>
+        <p className="micro muted">
+          Scheduled time: 08:00 IST. Refresh checks reports and status; start a
+          new audit in GitHub.
+        </p>
+      </details>
     </section>
   );
 }

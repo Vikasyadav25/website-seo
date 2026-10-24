@@ -71,7 +71,7 @@ test("agent status follows GitHub and retains the last published report after fa
   ).toBeVisible();
   if (testInfo.project.name === "mobile")
     await page.locator(".mobile-close").click();
-  await page.getByText("What the agent checked", { exact: true }).click();
+  await page.getByText("Run details", { exact: true }).click();
   await expect(page.getByText(/Checked 2 HTML pages/)).toBeVisible();
   await page.screenshot({
     path: `private/agent-${testInfo.project.name}.png`,
@@ -107,6 +107,7 @@ test("GitHub rate limits show unknown current activity without hiding report evi
   await expect(
     page.getByRole("heading", { name: "Current agent activity unavailable" }),
   ).toBeVisible();
+  await page.getByText("Run details", { exact: true }).click();
   await expect(
     page.getByRole("heading", { name: "Last published audit" }),
   ).toBeVisible();
@@ -129,6 +130,7 @@ test("content agent exposes real assisted outputs without claiming publication",
   ).toBeVisible();
   await expect(page.locator(".content-stages li")).toHaveCount(6);
   await expect(page.locator(".content-images img")).toHaveCount(2);
+  await page.getByText("View illustrations (2)", { exact: true }).click();
   for (const image of await page.locator(".content-images img").all()) {
     await image.scrollIntoViewIfNeeded();
     await expect(image).toBeVisible();
@@ -142,6 +144,7 @@ test("content agent exposes real assisted outputs without claiming publication",
       )
       .toBe(true);
   }
+  await page.getByText("Workflow steps", { exact: true }).click();
   await expect(
     page.getByRole("button", { name: "Store publication unavailable" }),
   ).toBeDisabled();
@@ -163,15 +166,16 @@ test("production report shows real activity, measurements and crawl findings", a
     route.fulfill({ json: connectedReport() }),
   );
   await page.goto("#/");
-  await expect(page.getByText("Last published audit")).toBeVisible();
+  await expect(page.getByText(/^Last audit:/)).toBeVisible();
   await expect(
-    page.getByRole("heading", { name: "What to work on first" }),
+    page.getByRole("heading", { name: "Your agents" }),
   ).toBeVisible();
   await expect(page.locator(".welcome-art")).toHaveCount(0);
   await expect(page.locator(".environment-tag")).toHaveText("PARTIAL");
   await expect(
-    page.getByText("Technical findings", { exact: true }),
+    page.getByRole("link", { name: "View findings", exact: true }),
   ).toBeVisible();
+  await expect(page.locator("main table")).toHaveCount(0);
   await expect(page.getByText("First measured baseline recorded")).toHaveCount(
     0,
   );
@@ -237,10 +241,10 @@ test("proposal deep links show exact diff with publishing disabled", async ({
 test("date selection changes chart and reports can be exported", async ({
   page,
 }) => {
-  await page.goto("#/");
-  await page.getByLabel("Reporting window").selectOption("7");
-  await expect(page.locator("svg desc")).toContainText("7 daily observations");
   await page.goto("#/reports");
+  await page.getByLabel("Reporting window").selectOption("7");
+  await page.getByText("Metadata check history", { exact: true }).click();
+  await expect(page.locator("svg desc")).toContainText("7 daily observations");
   const downloading = page.waitForEvent("download");
   await page.getByRole("button", { name: "Download public JSON" }).click();
   expect((await downloading).suggestedFilename()).toBe(

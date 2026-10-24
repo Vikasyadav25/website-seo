@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import { expect, it } from "vitest";
 import { connectedReport } from "../test/connectedReport";
@@ -21,6 +21,7 @@ function mount(activity: WorkflowStatus) {
       <AgentActivity report={report} activity={activity} />
     </MemoryRouter>,
   );
+  fireEvent.click(screen.getByText("Run details"));
 }
 
 it.each([

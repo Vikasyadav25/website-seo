@@ -37,17 +37,6 @@ export function ContentAgent({ report }: { report: PublicReport }) {
           </div>
           <StatusBadge status={workflow.status} />
         </div>
-        <ol className="content-stages">
-          {workflow.stages.map((stage) => (
-            <li key={stage.id}>
-              <div>
-                <strong>{stage.label}</strong>
-                <StatusBadge status={stage.status} />
-              </div>
-              <p>{stage.evidence}</p>
-            </li>
-          ))}
-        </ol>
         <div className="toolbar">
           <button
             className="button"
@@ -69,6 +58,20 @@ export function ContentAgent({ report }: { report: PublicReport }) {
           >
             Download review bundle
           </button>
+        </div>
+        <details className="content-disclosure">
+          <summary>Workflow steps</summary>
+          <ol className="content-stages">
+            {workflow.stages.map((stage) => (
+              <li key={stage.id}>
+                <div>
+                  <strong>{stage.label}</strong>
+                  <StatusBadge status={stage.status} />
+                </div>
+                <p>{stage.evidence}</p>
+              </li>
+            ))}
+          </ol>
           <button
             className="button"
             disabled
@@ -76,10 +79,10 @@ export function ContentAgent({ report }: { report: PublicReport }) {
           >
             Store publication unavailable
           </button>
-        </div>
+        </details>
       </section>
-      <section className="panel">
-        <h2>Research and competitor evidence</h2>
+      <details className="panel content-disclosure">
+        <summary>Research sources</summary>
         <ul className="research-sources">
           {workflow.sources.map((source) => (
             <li key={source.url}>
@@ -99,8 +102,9 @@ export function ContentAgent({ report }: { report: PublicReport }) {
           Keyword brief: {workflow.keywords.join(" · ")}. These are editorial
           ideas, not measured demand.
         </p>
-      </section>
-      <section className="panel content-draft">
+      </details>
+      <details className="panel content-draft content-disclosure">
+        <summary>Read article draft</summary>
         <span className="eyebrow">Article draft · Needs merchant review</span>
         <h2>{workflow.draft.title}</h2>
         <details>
@@ -133,9 +137,9 @@ export function ContentAgent({ report }: { report: PublicReport }) {
             <p>{faq.answer}</p>
           </section>
         ))}
-      </section>
-      <section className="panel">
-        <h2>Generated editorial illustrations</h2>
+      </details>
+      <details className="panel content-disclosure">
+        <summary>View illustrations ({workflow.images.length})</summary>
         <p className="small muted">
           Illustrative visuals only. These are not verified Ratniva product
           photographs.
@@ -166,9 +170,9 @@ export function ContentAgent({ report }: { report: PublicReport }) {
             </figure>
           ))}
         </div>
-      </section>
-      <section className="panel">
-        <h2>Prepare another topic</h2>
+      </details>
+      <details className="panel content-disclosure">
+        <summary>Prepare another topic</summary>
         <p>
           Research, drafting and image creation currently run with your
           assistant. This form prepares instructions; it does not launch a
@@ -196,7 +200,7 @@ export function ContentAgent({ report }: { report: PublicReport }) {
         <p role="status" className="small muted">
           {copyStatus}
         </p>
-      </section>
+      </details>
     </>
   );
 }

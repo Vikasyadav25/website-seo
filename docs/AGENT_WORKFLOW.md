@@ -21,6 +21,11 @@ rich-result eligibility, a featured snippet, or AI citations.
 
 ## Work modules
 
+The overview keeps audit status, five agent cards and a short findings summary
+visible. Run evidence opens under **Run details**. Each agent opens its own page;
+the content draft, sources, illustrations and workflow steps expand on demand.
+Metadata history is available in **Run history**, under **More tools**.
+
 | Agent   | Existing output                                                  | Remaining dependency                                                  |
 | ------- | ---------------------------------------------------------------- | --------------------------------------------------------------------- |
 | Keyword | Editorial ideas attached to a sourced content brief              | GSC for private performance; external evidence for volume/difficulty  |

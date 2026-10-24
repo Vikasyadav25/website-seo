@@ -44,7 +44,7 @@ const descriptions: Record<string, string> = {
     "Inspect structured-data and answer-readiness evidence from sampled public pages.",
   "/tracker":
     "Check source availability before interpreting search performance or ranking changes.",
-  "/": "Check what the agent ran, inspect its findings, and choose the next action.",
+  "/": "Your agents and latest audit.",
   "/search": "Search visibility, with the right privacy boundaries.",
   "/keywords": "Connect clear search intent with useful landing pages.",
   "/products": "Help every product tell its story clearly.",
@@ -232,9 +232,11 @@ export function App() {
                 </select>
                 <ChevronDown size={14} aria-hidden="true" />
               </label>
-              <GitHubLink repository={report?.repositoryUrl || null}>
-                Run history in GitHub
-              </GitHubLink>
+              {location.pathname !== "/" && (
+                <GitHubLink repository={report?.repositoryUrl || null}>
+                  Run history in GitHub
+                </GitHubLink>
+              )}
               <button
                 className="button"
                 onClick={() => {
@@ -257,16 +259,16 @@ export function App() {
               <span className="environment-tag">{state}</span>
               <span>
                 {report?.mode === "demo"
-                  ? "You’re exploring synthetic example data. No live analytics or store connections."
+                  ? "Demo data."
                   : state === "STALE"
-                    ? "This report is over 48 hours old. Run a fresh audit before making decisions."
+                    ? "Report is over 48 hours old."
                     : state === "PARTIAL"
-                      ? "A real audit completed with sampled or incomplete coverage. See measured findings and the crawler details below."
+                      ? "Sampled audit."
                       : state === "NOT CONFIGURED"
-                        ? "No live sources connected. Follow the setup guide to configure read-only collectors."
+                        ? "Sources not connected."
                         : error
-                          ? "Report unavailable. No data has been assumed."
-                          : "Latest published audit snapshot. Public website findings are shown; private analytics remain excluded."}
+                          ? "Report unavailable."
+                          : "Read-only report."}
               </span>
             </div>
             <span className="small">

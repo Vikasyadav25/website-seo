@@ -13,7 +13,7 @@ import {
   Settings2,
 } from "lucide-react";
 export const navigation = [
-  { path: "/", label: "Agent", icon: LayoutDashboard, group: "Workspace" },
+  { path: "/", label: "Overview", icon: LayoutDashboard, group: "Workspace" },
   {
     path: "/search",
     label: "Search performance",

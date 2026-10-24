@@ -9,6 +9,7 @@ import type { PublicReport } from "../types";
 import { GitHubLink } from "../components/GitHubLink";
 import { EmptyState } from "../components/EmptyState";
 import { StatusBadge } from "../components/StatusBadge";
+import { TrendChart } from "../components/TrendChart";
 import { download, makeCsv } from "../lib/export";
 import { dateTime, humanize, inWindow } from "../lib/format";
 
@@ -250,6 +251,15 @@ export function Reports({
   );
   return (
     <>
+      <details className="panel content-disclosure">
+        <summary>Metadata check history</summary>
+        <TrendChart
+          points={report.healthHistory.filter((point) =>
+            inWindow(point.date, days, report.generatedAt),
+          )}
+          demo={report.mode === "demo"}
+        />
+      </details>
       <div className="toolbar">
         <button
           className="button"

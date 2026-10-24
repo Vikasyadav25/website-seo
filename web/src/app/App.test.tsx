@@ -27,12 +27,17 @@ describe("dashboard states", () => {
       json: async () => connectedReport(),
     } as Response);
     mount();
-    expect(await screen.findByText("Last published audit")).toBeInTheDocument();
+    expect(await screen.findByText(/^Last audit:/)).toBeInTheDocument();
     expect(
       screen.getByText("PARTIAL", { selector: ".environment-tag" }),
     ).toBeInTheDocument();
-    expect(screen.getByText("Pages checked")).toBeInTheDocument();
-    expect(screen.getByText("Technical findings")).toBeInTheDocument();
+    expect(
+      screen.getByRole("region", { name: "Audit summary" }),
+    ).toHaveTextContent("2 pages checked");
+    expect(
+      screen.getByRole("region", { name: "Audit summary" }),
+    ).toHaveTextContent("1 published findings");
+    fireEvent.click(screen.getByText("Run details"));
     expect(
       screen.queryByText("First measured baseline recorded"),
     ).not.toBeInTheDocument();
@@ -40,12 +45,12 @@ describe("dashboard states", () => {
       screen.getByRole("link", { name: "View published audit proof" }),
     ).toHaveAttribute("href", expect.stringContaining("/actions/runs/123"));
     expect(
-      screen.queryByText("No public metrics published"),
+      screen.queryByText("No page measurement published"),
     ).not.toBeInTheDocument();
   });
   it("reloads reports using only public report and GitHub status requests", async () => {
     mount();
-    await screen.findByText("Last audit measurements");
+    await screen.findByText("Your agents");
     vi.mocked(fetch).mockResolvedValue({
       ok: true,
       json: async () => connectedReport(),
@@ -53,7 +58,7 @@ describe("dashboard states", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Refresh published report" }),
     );
-    expect(await screen.findByText("Last published audit")).toBeInTheDocument();
+    expect(await screen.findByText(/^Last audit:/)).toBeInTheDocument();
     expect(
       vi
         .mocked(fetch)
@@ -90,15 +95,11 @@ describe("dashboard states", () => {
       json: async () => fixture,
     } as Response);
     fireEvent.click(screen.getByRole("button", { name: "Retry" }));
-    expect(
-      await screen.findByText("Last audit measurements"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Your agents")).toBeInTheDocument();
   });
   it("shows demo provenance and functional date window", async () => {
     mount();
-    expect(
-      await screen.findByText("Last audit measurements"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Your agents")).toBeInTheDocument();
     expect(
       screen.getByText("DEMO", { selector: ".environment-tag" }),
     ).toBeInTheDocument();
@@ -125,7 +126,7 @@ describe("dashboard states", () => {
     } as Response);
     mount();
     expect(
-      await screen.findByText("No public metrics published"),
+      await screen.findByText("No page measurement published"),
     ).toBeInTheDocument();
     expect(
       screen.getByText("NOT CONFIGURED", { selector: ".environment-tag" }),
