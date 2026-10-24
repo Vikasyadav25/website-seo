@@ -5,7 +5,7 @@
 - Phase 1: all twelve routes, responsive UI, source/error/stale/empty states,
   filters/sorts/date windows, product drawer, exact diffs, exports, tests and Pages.
 - Phase 2 core: typed read-only Shopify/GSC/PageSpeed collectors, bounded crawler,
-  per-audit same-organization Shopify client-credentials exchange (mock verified),
+  per-audit same-organization Shopify client-credentials exchange (live verified),
   retry/pagination/timeout/error behavior, private snapshots, source freshness,
   explicit public-count opt-in, encryption and trusted report handoff.
 - Phase 3 core: conservative missing-description drafts, evidence IDs, priority
@@ -24,15 +24,21 @@
 - Main branch protection, protected Shopify reviewer configuration, and scheduled
   run quota/access verification. Hosted CI and Pages deployment have passed; the
   Pages environment restricts deployments to `main`.
-- Shopify store domain, credential lifecycle/scopes, GSC property/identity, PSI key.
+- Long-term Shopify credential rotation/expiry recovery, GSC property/identity, PSI key.
 - Test-product dry-run, encrypted-original recovery, actual publish and rollback.
 - Longitudinal real performance comparisons and measured ranking/conversion outcomes.
 
 The code is not claimed production-approved merely because mocked tests pass.
-No authenticated store calls or writes were made. A live sampled public HTML
-crawl was completed on 23 October 2026; its sanitized snapshot is bundled locally.
-Shopify/GSC/PageSpeed remain not configured. This does not verify full-site SEO
-or deployment of these local changes. See [latest audit](LATEST_AUDIT.md).
+Shopify client-credentials exchange and authenticated catalog reads succeeded in
+[production audit 40067174050](https://github.com/Vikasyadav25/website-seo/actions/runs/40067174050)
+on 24 October 2026, 11:10 IST. The same audit sampled eight public HTML pages.
+[Hosted CI](https://github.com/Vikasyadav25/website-seo/actions/runs/40067169380)
+and [Pages deployment](https://github.com/Vikasyadav25/website-seo/actions/runs/40067225635)
+passed. The deployed dashboard was checked at 360px: fresh Shopify/crawler source
+states, findings, no browser errors or horizontal overflow. No Shopify writes
+were made. GSC/PageSpeed remain not configured. This does not establish full-site
+SEO coverage, a traffic comparison, or publishing/rollback readiness.
+See [latest audit](LATEST_AUDIT.md).
 
 ## Deliberately limited coverage
 

@@ -1,8 +1,14 @@
 # Public website audit — 23 October 2026
 
-Collected at 23:28 IST using the read-only, robots-aware crawler. The validated
-snapshot is in `web/public/data/report.json`. This is a local result; deployment
-has not been verified for these edits.
+Collected at 11:10 IST in
+[production audit 40067174050](https://github.com/Vikasyadav25/website-seo/actions/runs/40067174050).
+Shopify client-credentials authentication and catalog reads succeeded; the public
+crawler also connected. [Pages deployment](https://github.com/Vikasyadav25/website-seo/actions/runs/40067225635)
+passed. The live dashboard was verified in a 360px browser: the new report,
+Shopify connection, findings, no browser errors and no horizontal overflow.
+
+The bundled `web/public/data/report.json` remains the earlier 23 October public
+crawl for local use. The hosted dashboard reads the newer validated Actions report.
 
 ## Findings
 
@@ -29,9 +35,14 @@ has not been verified for these edits.
 
 The crawler stopped at its eight-URL budget with URLs still queued. This is not
 full-site coverage. Title/meta checks inspect presence; JSON-LD parsing does not
-validate Google's eligibility rules. There is no PageSpeed measurement, private
-catalog audit, click/impression comparison, or ranking analysis in this snapshot.
-Shopify, GSC, PageSpeed and manual Merchant diagnostics are not configured.
+validate Google's eligibility rules. Public JSON excludes private catalog details;
+there is no PageSpeed measurement, click/impression comparison, or ranking analysis.
+GSC, PageSpeed and manual Merchant diagnostics are not configured.
+
+No private report encryption key is configured. Detailed catalog records/drafts
+created on the ephemeral Actions runner were not uploaded as an artifact; only the
+validated public report was retained. Set up encrypted report retention before
+expecting private analysis to be available after a run.
 
 Raw source records and any later private analytics stay under ignored `private/`.
 No storefront changes or publishing were performed.

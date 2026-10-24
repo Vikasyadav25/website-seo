@@ -1,7 +1,8 @@
 # Read-only integration and approved publication
 
-A live public HTML crawl has been verified. Authenticated Shopify/GSC calls remain
-unverified until the configured production audit succeeds.
+Shopify client-credentials authentication, catalog reads, and a public HTML crawl
+were verified on 24 October 2026. GSC/PageSpeed remain not configured. See
+[latest audit](LATEST_AUDIT.md) for the actual run and remaining limits.
 
 ## Installed Dev Dashboard app: next steps
 

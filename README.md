@@ -5,14 +5,15 @@ content readiness, evidence-led recommendations, and controlled review.
 
 **Live dashboard:** [Open Ratniva Growth OS](https://vikasyadav25.github.io/website-seo/).
 
-**Local snapshot: real sampled public crawl; Shopify/GSC setup pending.**
-The bundled report is a read-only crawl of eight public pages, collected on
-23 October 2026. It contains measured public HTML findings, not private analytics.
-The deployed site may still serve an earlier report until deployment completes.
-Synthetic examples remain in `examples/` and are explicitly used by demo tests.
-Shopify and Google Search Console have not been verified live; their missing
-metrics are omitted. No Shopify changes were made. This software makes no ranking
-guarantees. See [latest audit](docs/LATEST_AUDIT.md) for findings and limits.
+**Live status: Shopify catalog reads and public crawl connected; GSC/PageSpeed pending.**
+The deployed report from 24 October 2026 contains a measured eight-page public
+HTML sample. Shopify app authentication and catalog reads succeeded in the same
+[production audit](https://github.com/Vikasyadav25/website-seo/actions/runs/40067174050).
+Public reports omit private catalog details and analytics. The bundled example
+snapshot remains the 23 October crawl; live deployments use validated Actions
+artifacts. Synthetic examples remain in `examples/` for explicitly labelled demo
+tests. No Shopify writes were made. This software makes no ranking guarantees.
+See [latest audit](docs/LATEST_AUDIT.md) for findings and limits.
 
 ## Run locally
 
