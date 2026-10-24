@@ -10,6 +10,7 @@ from agents.models import SourceResult
 
 def collect_pagespeed(api: ApiClient, urls: list[str], key: str, cache: Path, now=time.time):
     result = SourceResult(name="pagespeed", status="connected")
+    failures = set()
     cache.mkdir(parents=True, exist_ok=True)
     for url in urls[:5]:
         for strategy in ("mobile", "desktop"):
@@ -28,8 +29,11 @@ def collect_pagespeed(api: ApiClient, urls: list[str], key: str, cache: Path, no
                               "cls": audits.get("cumulative-layout-shift", {}).get("numericValue")}
                     path.write_text(json.dumps(record), encoding="utf-8")
                 result.records.append(record)
-            except (SourceError, KeyError, ValueError, OSError, TypeError):
+            except (SourceError, KeyError, ValueError, OSError, TypeError) as error:
                 result.status = "failed"
                 result.complete = False
-                result.message = "One or more PageSpeed samples unavailable; retained lab results may be cached."
+                failures.add(error.diagnostic() if isinstance(error, SourceError) else "Invalid sample or cache")
+    if failures:
+        result.message = (f"PageSpeed samples: {len(result.records)} succeeded; failures: {', '.join(sorted(failures))}. "
+                          "Retained lab results may be cached.")
     return result

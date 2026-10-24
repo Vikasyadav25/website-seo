@@ -42,9 +42,9 @@ def collect_gsc(api: ApiClient, site: str, access_token: str, *, today=None, day
             if len(rows) < 1000:
                 result.message = f"Final reporting window {start.isoformat()} to {end.isoformat()}; API rows are not exhaustive."
                 return result
-    except SourceError:
+    except SourceError as error:
         result.status = "failed"
-        result.message = "Search performance collection incomplete; retained rows stay private."
+        result.message = f"Search performance collection incomplete ({error.diagnostic()}); retained rows stay private."
     result.complete = False
     if not result.message:
         result.message = "GSC row budget reached; partial data only."

@@ -92,6 +92,34 @@ def test_retry_then_success():
     assert len(counter) == 2
 
 
+@pytest.mark.parametrize("status,reason", [(403, "SERVICE_DISABLED"), (429, "RATE_LIMIT_EXCEEDED")])
+def test_google_errors_keep_only_allowlisted_diagnostics(status, reason, tmp_path):
+    def handler(_):
+        return httpx.Response(status, json={"error": {
+            "message": "PRIVATE_REMOTE_RESPONSE",
+            "details": [{"reason": reason, "metadata": {"key": "PRIVATE_CREDENTIAL"}}],
+        }})
+
+    for result in [collect_gsc(client(handler), "sc-domain:ratniva.com", "x"),
+                   collect_pagespeed(client(handler), ["https://ratniva.com/"], "x", tmp_path)]:
+        assert result.status == "failed"
+        assert f"HTTP {status}" in result.message and reason in result.message
+        assert "PRIVATE_" not in result.message
+
+
+@pytest.mark.parametrize("payload", [
+    {"error": {"errors": [{"reason": "PRIVATE_CREDENTIAL"}]}},
+    {"error": {"details": [{"reason": ["PRIVATE_CREDENTIAL"]}]}},
+    {"error": "PRIVATE_CREDENTIAL"},
+    {"error": {"details": None}},
+])
+def test_remote_error_content_is_never_used_as_a_diagnostic(payload):
+    api = client(lambda _: httpx.Response(403, json=payload))
+    result = collect_gsc(api, "sc-domain:ratniva.com", "x")
+    assert "HTTP 403" in result.message
+    assert "PRIVATE_CREDENTIAL" not in result.message
+
+
 def test_timeouts_for_all_adapters(tmp_path):
     def handler(request):
         raise httpx.ReadTimeout("secret-url", request=request)
@@ -101,6 +129,9 @@ def test_timeouts_for_all_adapters(tmp_path):
                    collect_pagespeed(client(handler), ["https://ratniva.com/"], "x", tmp_path)]:
         assert result.status == "failed"
         assert "secret-url" not in result.message
+
+    result = collect_pagespeed(client(handler), ["https://ratniva.com/"], "x", tmp_path)
+    assert "timeout" in result.message and "0 succeeded" in result.message
 
 
 def test_shopify_partial_and_graphql_errors():

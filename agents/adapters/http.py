@@ -3,11 +3,42 @@ import time
 
 import httpx
 
+GOOGLE_ERROR_REASONS = frozenset({
+    "SERVICE_DISABLED", "API_KEY_INVALID", "API_KEY_SERVICE_BLOCKED",
+    "API_KEY_HTTP_REFERRER_BLOCKED", "API_KEY_IP_ADDRESS_BLOCKED",
+    "RATE_LIMIT_EXCEEDED", "QUOTA_EXCEEDED", "ACCESS_TOKEN_SCOPE_INSUFFICIENT",
+    "accessNotConfigured", "keyInvalid", "ipRefererBlocked", "forbidden",
+    "insufficientPermissions", "dailyLimitExceeded", "rateLimitExceeded",
+    "userRateLimitExceeded", "quotaExceeded", "authError",
+})
+
+
+def google_error_reason(response: httpx.Response) -> str | None:
+    """Extract only known machine codes, never remote messages or metadata."""
+    try:
+        error = response.json().get("error", {})
+        for entry in [*error.get("details", []), *error.get("errors", [])]:
+            reason = entry.get("reason")
+            if isinstance(reason, str) and reason in GOOGLE_ERROR_REASONS:
+                return reason
+    except (ValueError, AttributeError, TypeError):
+        pass
+    return None
+
 
 class SourceError(RuntimeError):
-    def __init__(self, message, status=None):
+    def __init__(self, message, status=None, code=None):
         super().__init__(message)
         self.status = status
+        self.code = code
+
+    def diagnostic(self) -> str:
+        parts = []
+        if type(self.status) is int and 100 <= self.status <= 599:
+            parts.append(f"HTTP {self.status}")
+        if isinstance(self.code, str) and self.code in GOOGLE_ERROR_REASONS | {"timeout", "network_error"}:
+            parts.append(self.code)
+        return "; ".join(parts) or "No safe error code available"
 
 
 class BudgetExceeded(SourceError):
@@ -32,19 +63,22 @@ class ApiClient:
             self.remaining -= 1
             try:
                 response = self.client.request(method, url, **kwargs)
-            except httpx.TransportError:
+            except httpx.TransportError as error:
                 if attempt == 2:
-                    raise SourceError("Source timeout or network failure") from None
+                    code = "timeout" if isinstance(error, httpx.TimeoutException) else "network_error"
+                    raise SourceError("Source timeout or network failure", code=code) from None
                 self.sleep(2 ** attempt)
                 continue
             if response.status_code in (429, 500, 502, 503, 504):
                 if attempt == 2:
-                    raise SourceError("Source retry budget exhausted")
+                    raise SourceError("Source retry budget exhausted", status=response.status_code,
+                                      code=google_error_reason(response))
                 delay = response.headers.get("retry-after", "")
                 self.sleep(min(float(delay), 30) if delay.isdigit() else 2 ** attempt)
                 continue
             if not response.is_success:
-                raise SourceError(f"Source returned HTTP {response.status_code}", status=response.status_code)
+                raise SourceError(f"Source returned HTTP {response.status_code}", status=response.status_code,
+                                  code=google_error_reason(response))
             if len(response.content) > 6_000_000:
                 raise SourceError("Source response exceeds size budget")
             return response
