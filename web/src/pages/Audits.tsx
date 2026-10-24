@@ -16,6 +16,7 @@ import { DiffPreview } from "../components/DiffPreview";
 import { ProposalDetail } from "../components/ProposalDetail";
 import { dateTime, humanize, inWindow, pathLabel } from "../lib/format";
 import { download, makeCsv } from "../lib/export";
+import { contentWorkflow } from "../lib/contentWorkflow";
 
 function SearchInput({
   value,
@@ -506,7 +507,18 @@ export function Keywords({ report }: { report: PublicReport }) {
   const [search, setSearch] = useState("");
   const [intent, setIntent] = useState("all");
   const [sort, setSort] = useState("asc");
-  const rows = report.keywordClusters
+  const content = contentWorkflow(report);
+  const clusters = report.keywordClusters.length
+    ? report.keywordClusters
+    : content.keywords.map((keyword) => ({
+        keyword,
+        intent: "Informational",
+        branded: false,
+        landingPage: `https://ratniva.com/blogs/journal/${content.draft.slug}`,
+        nextStep:
+          "Editorial idea for an unpublished draft. Verify demand; no volume, difficulty or rank has been measured.",
+      }));
+  const rows = clusters
     .filter(
       (k) =>
         (intent === "all" || intent === k.intent) &&

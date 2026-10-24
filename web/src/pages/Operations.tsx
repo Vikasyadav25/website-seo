@@ -13,6 +13,7 @@ import { download, makeCsv } from "../lib/export";
 import { dateTime, humanize, inWindow } from "../lib/format";
 
 export function SearchPerformance({ report }: { report: PublicReport }) {
+  const gsc = report.sourceHealth.find((source) => source.name === "gsc");
   return (
     <section className="panel privacy-panel">
       <div className="privacy-icon">
@@ -20,6 +21,10 @@ export function SearchPerformance({ report }: { report: PublicReport }) {
       </div>
       <span className="eyebrow">Owner analytics · Protected by design</span>
       <h2>Private analytics stay private.</h2>
+      <p>
+        Google Search Console:{" "}
+        <StatusBadge status={gsc?.status || "not_configured"} />
+      </p>
       <p>
         Search Console impressions, clicks, CTR, query lists, and average
         position are not published to this dashboard.
@@ -46,6 +51,37 @@ export function GEO({ report }: { report: PublicReport }) {
         Content readiness signals help prioritise useful, factual pages. They do
         not measure or predict AI search rankings or citations.
       </div>
+      <section className="panel">
+        <h2>AI-engine citation evidence</h2>
+        <p>
+          No automated engine observations have been collected. Missing
+          observations are not a No or a zero.
+        </p>
+        <div className="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Engine</th>
+                <th>Brand citation</th>
+                <th>Evidence</th>
+              </tr>
+            </thead>
+            <tbody>
+              {["ChatGPT", "Gemini", "Perplexity", "Google AI Overviews"].map(
+                (engine) => (
+                  <tr key={engine}>
+                    <td>{engine}</td>
+                    <td>
+                      <StatusBadge status="not_checked" />
+                    </td>
+                    <td>No verified observation recorded</td>
+                  </tr>
+                ),
+              )}
+            </tbody>
+          </table>
+        </div>
+      </section>
       <div className="readiness-grid">
         {report.readiness.map((signal) => (
           <section className="panel" key={signal.label}>

@@ -15,6 +15,13 @@ artifacts. Synthetic examples remain in `examples/` for explicitly labelled demo
 tests. No Shopify writes were made. This software makes no ranking guarantees.
 See [latest audit](docs/LATEST_AUDIT.md) for findings and limits.
 
+The command center now separates verified GitHub audit activity from published
+reports and assisted content work. Open **Content Agent** for the sourced silver
+care article, metadata, FAQ answers, two illustrations and review/download steps.
+See [agent workflow](docs/AGENT_WORKFLOW.md) for the automated/assisted split.
+Keyword demand, rank movement, AI citations and blog publication are not invented
+or implied by a completed content draft.
+
 ## Run locally
 
 Prerequisites: Node 22.12+ (use a current Node 22 patch), pnpm 12.9.1, Python 3.12+.

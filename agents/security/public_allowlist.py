@@ -16,7 +16,8 @@ FORBIDDEN = re.compile(
     r"|\bBearer\s+\S+|\bAIza[0-9A-Za-z_-]{20,}|\bsk-[A-Za-z0-9_-]{16,}"
     r"|\+\d[\d ()-]{8,}\d", re.I,
 )
-PUBLIC_HOSTS = {"github.com", "www.giva.co", "www.palmonas.com", "www.zavya.co"}
+PUBLIC_HOSTS = {"github.com", "www.giva.co", "www.palmonas.com", "www.zavya.co",
+                "www.tiffany.com", "www.canada.ca"}
 
 
 def validate_public_report(report: dict) -> None:

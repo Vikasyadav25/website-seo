@@ -1,18 +1,83 @@
-import { Clock3, ScanLine } from "lucide-react";
-import type { PublicReport } from "../types";
+import { Link } from "react-router-dom";
+import type { PublicReport, SourceHealth } from "../types";
+import type { WorkflowStatus } from "../lib/useWorkflowStatus";
 import { dateTime } from "../lib/format";
 import { StatusBadge } from "./StatusBadge";
+import { GitHubLink } from "./GitHubLink";
 
-export function AgentActivity({ report }: { report: PublicReport }) {
+const sourceNames: Record<SourceHealth["name"], string> = {
+  shopify: "Shopify catalog",
+  crawler: "Website crawl",
+  gsc: "Google Search Console",
+  pagespeed: "PageSpeed",
+  merchant_manual: "Merchant diagnostics",
+};
+
+function sourceEvidence(source: SourceHealth) {
+  if (source.status === "failed")
+    return "Request failed. No successful check is claimed.";
+  if (source.status === "stale")
+    return "Source results are stale; collect a fresh report.";
+  if (source.status === "not_configured")
+    return "Not configured. This source did not run.";
+  if (source.name === "shopify")
+    return "Catalog read succeeded. Detailed catalog results stay private.";
+  return source.message || "Read-only collection succeeded.";
+}
+
+export function AgentActivity({
+  report,
+  activity,
+}: {
+  report: PublicReport;
+  activity: WorkflowStatus;
+}) {
   if (report.mode === "demo") return null;
-  const crawler = report.sourceHealth.find(
-    (source) => source.name === "crawler",
-  );
-  const missing = report.sourceHealth.filter(
-    (source) =>
-      ["shopify", "gsc"].includes(source.name) &&
-      source.status === "not_configured",
-  );
+  const run = activity.state === "verified" ? activity.run : null;
+  const newerRun =
+    run &&
+    run.url !== report.latestRun?.githubRunUrl &&
+    Date.parse(run.createdAt) > Date.parse(report.generatedAt);
+  let heading =
+    activity.state === "checking"
+      ? "Checking current agent activity"
+      : "Current agent activity unavailable";
+  let badge = activity.state === "checking" ? "checking" : "unavailable";
+  let explanation =
+    "The published report below is available. Open GitHub to verify whether a newer audit is running.";
+  if (activity.state === "verified") {
+    if (!run) {
+      heading = "No audit run could be verified";
+      badge = "not_configured";
+    } else if (run.status === "in_progress") {
+      heading = "Audit running now";
+      badge = "running";
+      explanation =
+        "GitHub confirms an audit is in progress. Findings below remain from the last published report.";
+    } else if (run.status !== "completed") {
+      heading = "Audit waiting to start";
+      badge = "queued";
+      explanation =
+        "GitHub has queued or paused the audit. No new results are available yet.";
+    } else if (run.conclusion === "success") {
+      heading = newerRun
+        ? "Audit finished; report update pending"
+        : "Latest audit finished";
+      badge = newerRun ? "partial" : "success";
+      explanation = newerRun
+        ? "The latest audit finished in GitHub. This dashboard is still showing an earlier published report."
+        : "The workflow finished. Source results below show what was collected and what remains unconfigured.";
+    } else {
+      heading = "Latest audit did not complete successfully";
+      badge = "failed";
+      explanation =
+        "Open the latest attempt to check its failed, cancelled or skipped steps. The published report may be older.";
+    }
+  }
+  const latest = report.latestRun;
+  const duration = latest?.finishedAt
+    ? Date.parse(latest.finishedAt) - Date.parse(latest.startedAt)
+    : NaN;
   return (
     <section
       className="panel agent-activity"
@@ -20,59 +85,107 @@ export function AgentActivity({ report }: { report: PublicReport }) {
     >
       <div className="section-heading">
         <div>
-          <span className="eyebrow">Real audit activity</span>
-          <h2 id="agent-activity-title">
-            <ScanLine size={19} />
-            Website crawler agent
-          </h2>
+          <span className="eyebrow">Agent activity</span>
+          <h2 id="agent-activity-title">{heading}</h2>
         </div>
-        <StatusBadge status={crawler?.status || "not_configured"} />
+        <StatusBadge status={badge} />
       </div>
-      <p>{crawler?.message || "The website crawler has not run yet."}</p>
-      <div className="agent-run-details">
-        <span>
-          <Clock3 size={15} />
-          Latest attempt finished: {dateTime(report.latestRun?.finishedAt)}
-        </span>
-        {report.latestRun && <StatusBadge status={report.latestRun.status} />}
-        {report.latestRun?.githubRunUrl && (
+      <p>{explanation}</p>
+      {activity.state === "verified" && (
+        <p className="small muted">
+          GitHub status checked: {dateTime(activity.checkedAt)}. Background
+          checks every 5 minutes.
+        </p>
+      )}
+      {run && (
+        <a
+          className="text-link"
+          href={run.url}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          View latest attempt #{run.id}
+        </a>
+      )}
+      <div className="agent-proof">
+        <div className="section-heading">
+          <h3>Last published audit</h3>
+          {latest && <StatusBadge status={latest.status} />}
+        </div>
+        <dl className="agent-proof-facts">
+          <div>
+            <dt>Finished</dt>
+            <dd>{dateTime(latest?.finishedAt)}</dd>
+          </div>
+          {Number.isFinite(duration) && duration >= 0 && (
+            <div>
+              <dt>Duration</dt>
+              <dd>{Math.round(duration / 1000)} seconds</dd>
+            </div>
+          )}
+          <div>
+            <dt>Store changes</dt>
+            <dd>
+              {report.publishingEvents.length
+                ? `${report.publishingEvents.length} published event records`
+                : "No published change records"}
+            </dd>
+          </div>
+        </dl>
+        {latest?.githubRunUrl && (
           <a
             className="text-link"
-            href={report.latestRun.githubRunUrl}
+            href={latest.githubRunUrl}
             target="_blank"
             rel="noopener noreferrer"
           >
-            View this audit run ↗
+            View published audit proof
           </a>
         )}
+        <details className="agent-source-details">
+          <summary>What the agent checked</summary>
+          <ul>
+            {report.sourceHealth
+              .filter((source) => source.name !== "merchant_manual")
+              .map((source) => (
+                <li key={source.name}>
+                  <div>
+                    <strong>{sourceNames[source.name]}</strong>
+                    <StatusBadge status={source.status} />
+                  </div>
+                  <p>{sourceEvidence(source)}</p>
+                  {source.lastSyncedAt && (
+                    <time
+                      className="micro muted"
+                      dateTime={source.lastSyncedAt}
+                    >
+                      Checked {dateTime(source.lastSyncedAt)}
+                    </time>
+                  )}
+                </li>
+              ))}
+          </ul>
+          <Link className="text-link" to="/settings">
+            Connection setup and details
+          </Link>
+        </details>
       </div>
-      <p className="muted small">
-        Scheduled audit time: 08:00 IST; check the run history to verify
-        execution. This dashboard shows the latest published snapshot and
-        refreshes every 60 seconds; the crawler does not run continuously in the
-        browser.
+      <div className="agent-actions">
+        <GitHubLink
+          repository={report.repositoryUrl}
+          suffix="/actions/workflows/daily-audit.yml"
+        >
+          Run audit in GitHub
+        </GitHubLink>
+        <span className="small muted">
+          Choose Run workflow, then production. Scheduled time: 08:00 IST;
+          schedules can be delayed.
+        </span>
+      </div>
+      <p className="micro muted">
+        Refreshing this dashboard checks reports and status; it does not start
+        an audit or change Shopify.
       </p>
-      {missing.length > 0 && (
-        <p className="small muted">
-          {missing
-            .map((source) =>
-              source.name === "gsc" ? "Google Search Console" : "Shopify",
-            )
-            .join(" and ")}{" "}
-          not connected yet. Product audits and search-performance data require
-          those connections.
-        </p>
-      )}
-      <a
-        className="text-link"
-        href={
-          report.repositoryUrl
-            ? `${report.repositoryUrl}/blob/main/docs/LIVE_SETUP.md`
-            : "#/settings"
-        }
-      >
-        Read-only connection setup
-      </a>
     </section>
   );
 }

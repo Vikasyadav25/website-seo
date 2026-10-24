@@ -13,26 +13,39 @@ import {
   Settings2,
 } from "lucide-react";
 export const navigation = [
-  { path: "/", label: "Overview", icon: LayoutDashboard, group: "Workspace" },
+  { path: "/", label: "Agent", icon: LayoutDashboard, group: "Workspace" },
   {
     path: "/search",
     label: "Search performance",
     icon: ChartNoAxesCombined,
     group: "Workspace",
   },
-  { path: "/keywords", label: "Keywords", icon: KeyRound, group: "Workspace" },
+  {
+    path: "/keywords",
+    label: "Keyword Agent",
+    icon: KeyRound,
+    group: "Agents",
+  },
+  { path: "/content", label: "Content Agent", icon: Files, group: "Agents" },
+  { path: "/aeo", label: "AEO Agent", icon: ListChecks, group: "Agents" },
+  {
+    path: "/tracker",
+    label: "Tracker Agent",
+    icon: ChartNoAxesCombined,
+    group: "Agents",
+  },
   { path: "/products", label: "Product SEO", icon: Gem, group: "Workspace" },
   {
     path: "/technical",
-    label: "Technical SEO",
+    label: "Findings",
     icon: ScanLine,
     group: "Workspace",
   },
   {
     path: "/geo",
-    label: "GEO / AI readiness",
+    label: "GEO Agent",
     icon: Sparkles,
-    group: "Workspace",
+    group: "Agents",
   },
   {
     path: "/competitors",
@@ -53,6 +66,6 @@ export const navigation = [
     group: "Actions",
   },
   { path: "/publishing", label: "Publishing", icon: Send, group: "Actions" },
-  { path: "/reports", label: "Reports", icon: Files, group: "Manage" },
-  { path: "/settings", label: "Settings", icon: Settings2, group: "Manage" },
+  { path: "/reports", label: "Run history", icon: Files, group: "Manage" },
+  { path: "/settings", label: "Connections", icon: Settings2, group: "Manage" },
 ];

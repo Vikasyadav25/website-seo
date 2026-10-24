@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
-import { NavLink, Route, Routes, useLocation, Link } from "react-router-dom";
+import { Route, Routes, useLocation, Link } from "react-router-dom";
 import {
   ArrowUpRight,
   BellDot,
@@ -12,10 +12,14 @@ import {
   CircleAlert,
 } from "lucide-react";
 import { navigation } from "./navigation";
+import { Navigation } from "../components/Navigation";
+import { useWorkflowStatus } from "../lib/useWorkflowStatus";
 import type { PublicReport } from "../types";
 import { loadReport } from "../lib/dataClient";
 import { dateTime, isStale } from "../lib/format";
 import { Overview } from "../pages/Overview";
+import { ContentAgent } from "../pages/ContentAgent";
+import { AeoAgent } from "../pages/AeoAgent";
 import {
   Keywords,
   Products,
@@ -34,7 +38,13 @@ import { GitHubLink } from "../components/GitHubLink";
 import { EmptyState } from "../components/EmptyState";
 
 const descriptions: Record<string, string> = {
-  "/": "A thoughtful overview of your organic growth.",
+  "/content":
+    "Inspect the topic, research, article, images and review gates for an assisted content run.",
+  "/aeo":
+    "Inspect structured-data and answer-readiness evidence from sampled public pages.",
+  "/tracker":
+    "Check source availability before interpreting search performance or ranking changes.",
+  "/": "Check what the agent ran, inspect its findings, and choose the next action.",
   "/search": "Search visibility, with the right privacy boundaries.",
   "/keywords": "Connect clear search intent with useful landing pages.",
   "/products": "Help every product tell its story clearly.",
@@ -62,6 +72,10 @@ export function App() {
     }
   });
   const location = useLocation();
+  const workflow = useWorkflowStatus(
+    report?.repositoryUrl || null,
+    report?.mode === "connected",
+  );
   useEffect(() => {
     const controller = new AbortController();
     loadReport(controller.signal)
@@ -148,46 +162,12 @@ export function App() {
         >
           <X />
         </button>
-        <nav aria-label="Main navigation">
-          {["Workspace", "Actions", "Manage"].map((group) => (
-            <div className="nav-group" key={group}>
-              <p>{group}</p>
-              {navigation
-                .filter((n) => n.group === group)
-                .map((item) => (
-                  <NavLink
-                    end={item.path === "/"}
-                    className={({ isActive }) =>
-                      `nav-link ${isActive ? "active" : ""}`
-                    }
-                    key={item.path}
-                    to={item.path}
-                    onClick={() => setMenu(false)}
-                  >
-                    <item.icon size={18} strokeWidth={1.6} />
-                    <span>{item.label}</span>
-                    {item.path === "/approvals" &&
-                      !!report?.recommendations.filter(
-                        (p) => p.status === "needs_review",
-                      ).length && (
-                        <span className="nav-count">
-                          {
-                            report.recommendations.filter(
-                              (p) => p.status === "needs_review",
-                            ).length
-                          }
-                        </span>
-                      )}
-                  </NavLink>
-                ))}
-            </div>
-          ))}
-        </nav>
+        <Navigation report={report} onNavigate={() => setMenu(false)} />
         <div className="sidebar-footer">
           <ShieldCheck size={18} />
           <div>
-            <strong>Considered growth.</strong>
-            <span>Human reviewed. Always.</span>
+            <strong>Read-only audits</strong>
+            <span>Changes require review.</span>
           </div>
         </div>
         <div className="workspace-owner">
@@ -234,7 +214,7 @@ export function App() {
         <main id="main-content" tabIndex={-1}>
           <div className="page-heading">
             <div>
-              <span className="eyebrow">RATNIVA INTELLIGENCE</span>
+              <span className="eyebrow">RATNIVA SEO</span>
               <h1>{current?.label || "Page not found"}</h1>
               <p>{descriptions[location.pathname]}</p>
             </div>
@@ -253,11 +233,14 @@ export function App() {
                 <ChevronDown size={14} aria-hidden="true" />
               </label>
               <GitHubLink repository={report?.repositoryUrl || null}>
-                View GitHub Actions
+                Run history in GitHub
               </GitHubLink>
               <button
                 className="button"
-                onClick={refreshReport}
+                onClick={() => {
+                  refreshReport();
+                  workflow.refresh();
+                }}
                 disabled={refreshing}
                 aria-label="Refresh published report"
               >
@@ -325,13 +308,28 @@ export function App() {
             <Routes>
               <Route
                 path="/"
-                element={<Overview report={report} days={days} />}
+                element={
+                  <Overview
+                    report={report}
+                    days={days}
+                    activity={workflow.status}
+                  />
+                }
               />
               <Route
                 path="/search"
                 element={<SearchPerformance report={report} />}
               />
               <Route path="/keywords" element={<Keywords report={report} />} />
+              <Route
+                path="/content"
+                element={<ContentAgent report={report} />}
+              />
+              <Route path="/aeo" element={<AeoAgent report={report} />} />
+              <Route
+                path="/tracker"
+                element={<SearchPerformance report={report} />}
+              />
               <Route
                 path="/products"
                 element={<Products report={report} days={days} />}

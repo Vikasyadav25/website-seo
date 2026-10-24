@@ -18,7 +18,7 @@ from agents.models import Product, SourceResult
 from agents.proposals.draft import draft_product
 from agents.proposals.validate import validate_proposal
 from agents.security.public_allowlist import ROOT, validate_public_report
-from agents.security.crawl_export import public_crawl_issues
+from agents.security.crawl_export import public_crawl_issues, public_page_checks
 
 
 def collect_production(public_report: dict, private_dir: Path, *, env=None, api_factory=ApiClient) -> dict:
@@ -107,6 +107,7 @@ def collect_production(public_report: dict, private_dir: Path, *, env=None, api_
     if config.get("publish_public_crawl_findings") is True and crawler:
         public_issues = public_crawl_issues(crawler.records, public_report)
         public_report["issues"] = public_issues
+        public_report["pageChecks"] = public_page_checks(crawler.records, public_report)
     if (re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", env.get("GITHUB_REPOSITORY", ""))
             and env.get("GITHUB_RUN_ID", "").isdigit()):
         run["githubRunUrl"] = f"https://github.com/{env['GITHUB_REPOSITORY']}/actions/runs/{env['GITHUB_RUN_ID']}"

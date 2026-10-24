@@ -21,6 +21,12 @@
 
 ## Not verified live / setup required
 
+The current command-center update adds verified public workflow status, five work
+modules, page-level AEO evidence, and a real assisted silver-care content bundle.
+Local verification includes API failure/fork boundaries, article/assets validation,
+draft exports and desktop/360px browser coverage. See [agent workflow](AGENT_WORKFLOW.md)
+for the exact automated/assisted split and remaining citation/rank/publication gaps.
+
 - Main branch protection, protected Shopify reviewer configuration, and scheduled
   run quota/access verification. Hosted CI and Pages deployment have passed; the
   Pages environment restricts deployments to `main`.

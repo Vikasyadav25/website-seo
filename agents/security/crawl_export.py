@@ -23,3 +23,22 @@ def public_crawl_issues(records: list[dict], report: dict) -> list[dict]:
         except (ValueError, KeyError, TypeError):
             continue
     return exported
+
+
+def public_page_checks(records: list[dict], report: dict) -> list[dict]:
+    """Export booleans about fetched public HTML, never titles, body text or private facts."""
+    exported = []
+    for record in records:
+        if record.get("kind") != "page" or not safe_url(record.get("url", "")):
+            continue
+        readiness = record.get("readiness", {})
+        try:
+            row = {"url": record["url"], "checkedAt": record["asOf"],
+                   "titlePresent": bool(record.get("title", "").strip()),
+                   "descriptionPresent": bool(record.get("description", "").strip()),
+                   **{key: readiness[key] for key in ("structuredDataPresent", "helpfulQuestionsPresent", "aboutOrContactLinkPresent")}}
+            validate_public_report({**report, "pageChecks": [row]})
+            exported.append(row)
+        except (ValueError, KeyError, TypeError):
+            continue
+    return exported

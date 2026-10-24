@@ -5,6 +5,9 @@ const routes = [
   "/",
   "/search",
   "/keywords",
+  "/content",
+  "/aeo",
+  "/tracker",
   "/products",
   "/technical",
   "/geo",
@@ -17,9 +20,141 @@ const routes = [
 ];
 // Demo interactions use explicit fixtures even when the shipped snapshot is real.
 test.beforeEach(async ({ page }) => {
+  await page.route("https://api.github.com/**", (route) =>
+    route.fulfill({ json: { workflow_runs: [] } }),
+  );
   await page.route("**/data/report.json", (route) =>
     route.fulfill({ json: demoReport }),
   );
+});
+test("agent status follows GitHub and retains the last published report after failure", async ({
+  page,
+}, testInfo) => {
+  const report = connectedReport();
+  let running = true;
+  await page.route("**/data/report.json", (route) =>
+    route.fulfill({ json: report }),
+  );
+  await page.route("https://api.github.com/**", (route) =>
+    route.fulfill({
+      json: {
+        workflow_runs: [
+          {
+            id: 123,
+            head_branch: "main",
+            event: "workflow_dispatch",
+            head_repository: { full_name: "Vikasyadav25/website-seo" },
+            status: running ? "in_progress" : "completed",
+            conclusion: running ? null : "failure",
+            created_at: report.generatedAt,
+            updated_at: report.generatedAt,
+          },
+        ],
+      },
+    }),
+  );
+  await page.goto("#/");
+  await expect(
+    page.getByRole("heading", { name: "Audit running now" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("link", { name: "Run audit in GitHub" }),
+  ).toHaveAttribute("href", /daily-audit.yml$/);
+  await expect(
+    page.getByRole("link", { name: "Product SEO", exact: true }),
+  ).not.toBeVisible();
+  if (testInfo.project.name === "mobile")
+    await page.getByRole("button", { name: "Open navigation" }).click();
+  await page.getByText("More tools", { exact: true }).click();
+  await expect(
+    page.getByRole("link", { name: "Product SEO", exact: true }),
+  ).toBeVisible();
+  if (testInfo.project.name === "mobile")
+    await page.locator(".mobile-close").click();
+  await page.getByText("What the agent checked", { exact: true }).click();
+  await expect(page.getByText(/Checked 2 HTML pages/)).toBeVisible();
+  await page.screenshot({
+    path: `private/agent-${testInfo.project.name}.png`,
+    fullPage: true,
+  });
+  running = false;
+  await page.getByRole("button", { name: "Refresh published report" }).click();
+  await expect(
+    page.getByRole("heading", {
+      name: "Latest audit did not complete successfully",
+    }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Last published audit" }),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+});
+
+test("GitHub rate limits show unknown current activity without hiding report evidence", async ({
+  page,
+}) => {
+  await page.route("**/data/report.json", (route) =>
+    route.fulfill({ json: connectedReport() }),
+  );
+  await page.route("https://api.github.com/**", (route) =>
+    route.fulfill({ status: 429, json: {} }),
+  );
+  await page.goto("#/");
+  await expect(
+    page.getByRole("heading", { name: "Current agent activity unavailable" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Last published audit" }),
+  ).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "Audit running now" }),
+  ).toHaveCount(0);
+});
+test("content agent exposes real assisted outputs without claiming publication", async ({
+  page,
+}) => {
+  await page.goto("#/content");
+  await expect(
+    page.getByRole("heading", {
+      name: "925 silver jewellery care guide",
+      exact: true,
+    }),
+  ).toBeVisible();
+  await expect(
+    page.locator(".notice").filter({ hasText: "Assisted content run" }),
+  ).toBeVisible();
+  await expect(page.locator(".content-stages li")).toHaveCount(6);
+  await expect(page.locator(".content-images img")).toHaveCount(2);
+  for (const image of await page.locator(".content-images img").all()) {
+    await image.scrollIntoViewIfNeeded();
+    await expect(image).toBeVisible();
+    await expect
+      .poll(() =>
+        image.evaluate(
+          (node) =>
+            (node as HTMLImageElement).complete &&
+            (node as HTMLImageElement).naturalWidth > 0,
+        ),
+      )
+      .toBe(true);
+  }
+  await expect(
+    page.getByRole("button", { name: "Store publication unavailable" }),
+  ).toBeDisabled();
+  const downloading = page.waitForEvent("download");
+  await page.getByRole("button", { name: "Download article draft" }).click();
+  expect((await downloading).suggestedFilename()).toBe(
+    "925-silver-jewellery-care-guide.md",
+  );
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
 });
 test("production report shows real activity, measurements and crawl findings", async ({
   page,
@@ -28,7 +163,7 @@ test("production report shows real activity, measurements and crawl findings", a
     route.fulfill({ json: connectedReport() }),
   );
   await page.goto("#/");
-  await expect(page.getByText("Website crawler agent")).toBeVisible();
+  await expect(page.getByText("Last published audit")).toBeVisible();
   await expect(
     page.getByRole("heading", { name: "What to work on first" }),
   ).toBeVisible();
@@ -37,9 +172,9 @@ test("production report shows real activity, measurements and crawl findings", a
   await expect(
     page.getByText("Technical findings", { exact: true }),
   ).toBeVisible();
-  await expect(
-    page.getByText("First measured baseline recorded"),
-  ).toBeVisible();
+  await expect(page.getByText("First measured baseline recorded")).toHaveCount(
+    0,
+  );
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= innerWidth,
@@ -51,6 +186,11 @@ test("production report shows real activity, measurements and crawl findings", a
   await expect(page.getByRole("dialog")).toContainText(
     "No nonempty meta description detected.",
   );
+  await page.keyboard.press("Escape");
+  await page.goto("#/aeo");
+  await expect(page.locator("tbody tr")).toHaveCount(1);
+  await expect(page.locator("tbody tr")).toContainText("Description absent");
+  await expect(page.locator("tbody tr")).toContainText("Not detected");
 });
 test("all routes load on a GitHub Pages project subpath", async ({
   page,

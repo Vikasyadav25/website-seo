@@ -52,6 +52,17 @@ export function connectedReport(): PublicReport {
       },
     ],
     healthHistory: [{ date: stamp.slice(0, 10), score: 75, pagesChecked: 2 }],
+    pageChecks: [
+      {
+        url: "https://ratniva.com/collections/rings",
+        checkedAt: stamp,
+        titlePresent: true,
+        descriptionPresent: false,
+        structuredDataPresent: false,
+        helpfulQuestionsPresent: false,
+        aboutOrContactLinkPresent: true,
+      },
+    ],
   };
   assertPublicReport(report);
   return report;

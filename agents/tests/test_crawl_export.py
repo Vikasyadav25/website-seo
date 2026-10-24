@@ -9,7 +9,7 @@ from agents.jobs.crawl_site import audit_html
 from agents.jobs.pipeline import collect_production
 from agents.main import build_report
 from agents.models import SourceResult
-from agents.security.crawl_export import public_crawl_issues
+from agents.security.crawl_export import public_crawl_issues, public_page_checks
 from agents.security.public_allowlist import ROOT, validate_public_report
 
 STAMP = "2026-10-23T02:30:00Z"
@@ -28,6 +28,19 @@ def test_only_explicit_public_crawl_fields_are_exported():
     assert issues
     assert all("kind" not in issue and "rawHtml" not in issue for issue in issues)
     assert "PRIVATE_RAW_MARKUP" not in str(issues)
+
+
+def test_page_readiness_exports_boolean_evidence_without_raw_page_content():
+    report = build_report("production")
+    rows = records()
+    rows[-1]["title"] = "PRIVATE_TITLE_SENTINEL"
+    checks = public_page_checks(rows, report)
+    assert len(checks) == 1
+    assert checks[0]["titlePresent"] is True
+    assert checks[0]["descriptionPresent"] is False
+    assert checks[0]["structuredDataPresent"] is False
+    assert "PRIVATE_TITLE_SENTINEL" not in str(checks)
+    validate_public_report({**report, "pageChecks": checks})
 
 
 def test_unsafe_findings_are_withheld():

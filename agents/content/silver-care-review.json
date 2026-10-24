@@ -1,0 +1,127 @@
+{
+  "id": "silver-care-guide-20261024",
+  "topic": "925 silver jewellery care guide",
+  "preparedAt": "2026-10-24T05:56:30.976775+00:00",
+  "mode": "assisted",
+  "status": "needs_review",
+  "stages": [
+    {
+      "id": "research",
+      "label": "Research and competitor review",
+      "status": "complete",
+      "evidence": "Three public care sources reviewed, including a competitor care page. Links and observations are attached."
+    },
+    {
+      "id": "keywords",
+      "label": "Keyword brief",
+      "status": "complete",
+      "evidence": "Five editorial keyword ideas mapped to this guide. No search volume, keyword difficulty or rank is claimed."
+    },
+    {
+      "id": "writing",
+      "label": "Article and answer sections",
+      "status": "complete",
+      "evidence": "Original article draft, search metadata and three concise FAQ answers prepared for review."
+    },
+    {
+      "id": "images",
+      "label": "Editorial images",
+      "status": "complete",
+      "evidence": "Two generated illustrations saved with descriptive alt text. They do not depict verified Ratniva products."
+    },
+    {
+      "id": "review",
+      "label": "Merchant review",
+      "status": "needs_review",
+      "evidence": "Confirm care advice against the actual finishes and settings sold by Ratniva; review text and illustrations."
+    },
+    {
+      "id": "publishing",
+      "label": "Store publication",
+      "status": "blocked",
+      "evidence": "Not published. The current guarded publisher only supports approved product SEO fields, not blog articles."
+    }
+  ],
+  "keywords": [
+    "925 silver jewellery care",
+    "how to store silver jewellery",
+    "silver jewellery cleaning cloth",
+    "why silver jewellery tarnishes",
+    "care for plated silver jewellery"
+  ],
+  "sources": [
+    {
+      "label": "Tiffany: sterling silver care",
+      "url": "https://www.tiffany.com/client-services/care-and-repair/sterling-silver-jewelry-care.html",
+      "note": "Primary care reference for avoiding chemicals, dry storage and finish-specific caution. No Tiffany service or packaging claim is attributed to Ratniva."
+    },
+    {
+      "label": "Canadian Conservation Institute: silver care",
+      "url": "https://www.canada.ca/en/conservation-institute/services/conservation-preservation-publications/canadian-conservation-institute-notes/care-silver.html",
+      "note": "Explains tarnish and why repeated removal can affect the metal surface. Museum chemical treatments are not recommended here."
+    },
+    {
+      "label": "GIVA: competitor care page",
+      "url": "https://www.giva.co/pages/care",
+      "note": "Public competitor review: covers storage, chemical exposure and gentle handling. Competitor plating and service promises are excluded from this draft."
+    }
+  ],
+  "draft": {
+    "title": "How to Care for 925 Silver Jewellery: A Practical Guide",
+    "metaTitle": "925 Silver Jewellery Care: Cleaning and Storage Guide",
+    "metaDescription": "Learn a gentle routine for silver jewellery, how to store pieces separately, and when a plated finish or delicate setting needs specialist care.",
+    "slug": "925-silver-jewellery-care-guide",
+    "sections": [
+      {
+        "heading": "Start with the finish, not a cleaning shortcut",
+        "text": "A silver ring, an oxidised pendant and a gold-plated silver chain can need different care. Before choosing a cleaner, check the instructions for the individual piece. If the finish, stones or construction are uncertain, start by asking the maker rather than trying an aggressive home treatment. This guide is general care information; the directions supplied with your jewellery take priority."
+      },
+      {
+        "heading": "Build a simple wearing routine",
+        "text": "Put jewellery on after applying fragrance, cosmetics and hair products. Remove it before swimming, household cleaning and activities that expose it to strong chemicals or impact. After wear, use a clean, soft cloth to remove surface residue gently. Check clasps and settings as you handle each piece; a loose part needs attention before the next wear."
+      },
+      {
+        "heading": "Understand tarnish without over-polishing",
+        "text": "Silver can develop a darker surface when it reacts with sulfur-containing substances in its surroundings. Tarnish is a surface change; it is not, by itself, a reliable purity test. Removing tarnish repeatedly can also remove some underlying metal, so prevention and careful handling matter. A darker recess may be an intentional oxidised detail rather than dirt to remove."
+      },
+      {
+        "heading": "Choose a gentle cleaning approach",
+        "text": "Begin with the care instructions and a soft cloth appropriate for the piece. A treatment intended for plain silver may be unsuitable for plating, an oxidised finish or a sensitive setting. Do not assume that a dip, abrasive paste or vigorous polishing is safe for every piece. If a cloth does not resolve the problem, describe the finish and setting to a jeweller before moving to a stronger treatment."
+      },
+      {
+        "heading": "Store pieces clean, dry and separately",
+        "text": "Before putting jewellery away, make sure it is dry. Give each piece its own compartment or suitable soft pouch to reduce contact and tangling. Keep the storage space away from damp conditions and avoid contact with rubber bands. A neat routine also makes it easier to notice a bent clasp or a change in a setting before wearing the piece again."
+      },
+      {
+        "heading": "When to ask for professional help",
+        "text": "Stop cleaning if a coating appears to be wearing away, a stone moves, or an unfamiliar surface change remains. Explain which cleaning products have already been used. Ask for advice specific to that piece rather than choosing a universal remedy. Keep the individual care instructions with the piece so that its next cleaning starts with the right information."
+      }
+    ],
+    "faqs": [
+      {
+        "question": "Does tarnish mean my silver jewellery is fake?",
+        "answer": "Tarnish alone does not establish authenticity. Silver can tarnish naturally; use reliable product documentation and appropriate professional verification for authenticity questions."
+      },
+      {
+        "question": "Can I use the same cleaner on all silver jewellery?",
+        "answer": "No. Plating, intentional oxidation and delicate settings can change which methods are suitable. Follow the instructions for the individual piece."
+      },
+      {
+        "question": "What is a useful everyday storage habit?",
+        "answer": "Put pieces away dry and separated in suitable compartments or pouches, rather than leaving chains tangled together in a damp place."
+      }
+    ]
+  },
+  "images": [
+    {
+      "src": "content/silver-care/gentle-care.jpg",
+      "alt": "Illustration of a silver ring and chain on a soft cloth beside a jewellery pouch.",
+      "caption": "Generated editorial illustration; not a Ratniva product photograph."
+    },
+    {
+      "src": "content/silver-care/separate-storage.jpg",
+      "alt": "Illustration of a silver ring and chain stored in separate compartments of a jewellery organiser.",
+      "caption": "Generated editorial illustration; review before publication."
+    }
+  ]
+}

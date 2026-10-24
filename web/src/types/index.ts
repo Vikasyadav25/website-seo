@@ -65,7 +65,41 @@ export interface Recommendation {
   }[];
   testPlan: string;
 }
+export interface ContentWorkflow {
+  id: string;
+  topic: string;
+  preparedAt: string;
+  mode: "assisted";
+  status: "needs_review";
+  stages: {
+    id: string;
+    label: string;
+    status: "complete" | "needs_review" | "blocked";
+    evidence: string;
+  }[];
+  keywords: string[];
+  sources: { label: string; url: string; note: string }[];
+  draft: {
+    title: string;
+    metaTitle: string;
+    metaDescription: string;
+    slug: string;
+    sections: { heading: string; text: string }[];
+    faqs: { question: string; answer: string }[];
+  };
+  images: { src: string; alt: string; caption: string }[];
+}
 export interface PublicReport {
+  contentWorkflow?: ContentWorkflow;
+  pageChecks?: {
+    url: string;
+    checkedAt: string;
+    titlePresent: boolean;
+    descriptionPresent: boolean;
+    structuredDataPresent: boolean;
+    helpfulQuestionsPresent: boolean;
+    aboutOrContactLinkPresent: boolean;
+  }[];
   schemaVersion: 1;
   mode: "demo" | "connected";
   generatedAt: string;

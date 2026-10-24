@@ -35,9 +35,13 @@ export function assertPublicReport(
           if (
             url.hostname !== site &&
             url.hostname !== "github.com" &&
-            !["www.giva.co", "www.palmonas.com", "www.zavya.co"].includes(
-              url.hostname,
-            )
+            ![
+              "www.giva.co",
+              "www.palmonas.com",
+              "www.zavya.co",
+              "www.tiffany.com",
+              "www.canada.ca",
+            ].includes(url.hostname)
           )
             throw new Error("The report contains an unapproved URL host.");
         }

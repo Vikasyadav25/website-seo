@@ -27,27 +27,25 @@ describe("dashboard states", () => {
       json: async () => connectedReport(),
     } as Response);
     mount();
-    expect(
-      await screen.findByText("Website crawler agent"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Last published audit")).toBeInTheDocument();
     expect(
       screen.getByText("PARTIAL", { selector: ".environment-tag" }),
     ).toBeInTheDocument();
     expect(screen.getByText("Pages checked")).toBeInTheDocument();
     expect(screen.getByText("Technical findings")).toBeInTheDocument();
     expect(
-      screen.getByText("First measured baseline recorded"),
-    ).toBeInTheDocument();
+      screen.queryByText("First measured baseline recorded"),
+    ).not.toBeInTheDocument();
     expect(
-      screen.getByRole("link", { name: "View this audit run ↗" }),
+      screen.getByRole("link", { name: "View published audit proof" }),
     ).toHaveAttribute("href", expect.stringContaining("/actions/runs/123"));
     expect(
       screen.queryByText("No public metrics published"),
     ).not.toBeInTheDocument();
   });
-  it("reloads published data without privileged browser requests", async () => {
+  it("reloads reports using only public report and GitHub status requests", async () => {
     mount();
-    await screen.findByText("At a glance");
+    await screen.findByText("Last audit measurements");
     vi.mocked(fetch).mockResolvedValue({
       ok: true,
       json: async () => connectedReport(),
@@ -55,13 +53,18 @@ describe("dashboard states", () => {
     fireEvent.click(
       screen.getByRole("button", { name: "Refresh published report" }),
     );
-    expect(
-      await screen.findByText("Website crawler agent"),
-    ).toBeInTheDocument();
+    expect(await screen.findByText("Last published audit")).toBeInTheDocument();
     expect(
       vi
         .mocked(fetch)
-        .mock.calls.every(([url]) => String(url).endsWith("data/report.json")),
+        .mock.calls.every(
+          ([url, options]) =>
+            (String(url).endsWith("data/report.json") ||
+              String(url).startsWith(
+                "https://api.github.com/repos/Vikasyadav25/website-seo/actions/workflows/daily-audit.yml/runs?",
+              )) &&
+            !new Headers(options?.headers).has("Authorization"),
+        ),
     ).toBe(true);
   });
   it("labels stale production data explicitly", async () => {
@@ -87,11 +90,15 @@ describe("dashboard states", () => {
       json: async () => fixture,
     } as Response);
     fireEvent.click(screen.getByRole("button", { name: "Retry" }));
-    expect(await screen.findByText("At a glance")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Last audit measurements"),
+    ).toBeInTheDocument();
   });
   it("shows demo provenance and functional date window", async () => {
     mount();
-    expect(await screen.findByText("At a glance")).toBeInTheDocument();
+    expect(
+      await screen.findByText("Last audit measurements"),
+    ).toBeInTheDocument();
     expect(
       screen.getByText("DEMO", { selector: ".environment-tag" }),
     ).toBeInTheDocument();
