@@ -7,7 +7,7 @@ import pytest
 from agents.adapters.gsc import collect_gsc
 from agents.adapters.http import ApiClient, BudgetExceeded, SourceError
 from agents.adapters.pagespeed import collect_pagespeed
-from agents.adapters.shopify import Shopify
+from agents.adapters.shopify import Shopify, client_credentials_token
 from agents.jobs.crawl_site import audit_html, crawl, safe_url
 
 STAMP = "2026-10-23T02:30:00Z"
@@ -21,6 +21,41 @@ def catalog_payload(next_page=False):
     return {"data": {"products": {"nodes": [{"id": "gid://shopify/Product/1", "title": "Silver ring",
             "productType": "Rings", "onlineStoreUrl": "https://ratniva.com/products/ring", "updatedAt": STAMP,
             "seo": {"title": None, "description": None}}], "pageInfo": {"hasNextPage": next_page, "endCursor": "cursor1"}}}}
+
+
+def test_shopify_client_credentials_exchange():
+    def handler(request):
+        from urllib.parse import parse_qs
+        assert request.url == "https://test.myshopify.com/admin/oauth/access_token"
+        assert request.method == "POST"
+        assert parse_qs(request.content.decode()) == {
+            "grant_type": ["client_credentials"], "client_id": ["test-client"], "client_secret": ["test-secret"],
+        }
+        return httpx.Response(200, json={"access_token": "test-token", "expires_in": 86399, "scope": "read_products"})
+
+    assert client_credentials_token("test.myshopify.com", "test-client", "test-secret", client(handler)) == "test-token"
+
+
+@pytest.mark.parametrize("payload", [
+    {}, {"access_token": "", "expires_in": 86399, "scope": "read_products"},
+    {"access_token": "test-token", "expires_in": 86399, "scope": "read_orders"},
+    {"access_token": "test-token", "expires_in": 0, "scope": "read_products"},
+    {"access_token": "test-token", "expires_in": True, "scope": "read_products"},
+])
+def test_shopify_rejects_invalid_token_response(payload):
+    with pytest.raises(SourceError, match="token response"):
+        client_credentials_token("test.myshopify.com", "test-client", "test-secret",
+                                 client(lambda _: httpx.Response(200, json=payload)))
+
+
+def test_shopify_token_errors_are_redacted_and_domain_is_checked_before_sending():
+    api = client(lambda _: pytest.fail("Credentials must not reach an invalid host"))
+    with pytest.raises(SourceError):
+        client_credentials_token("test.myshopify.com.evil.example", "test-client", "test-secret", api)
+    api = client(lambda _: httpx.Response(403, json={"error": "PRIVATE_REMOTE_RESPONSE"}))
+    with pytest.raises(SourceError) as error:
+        client_credentials_token("test.myshopify.com", "test-client", "test-secret", api)
+    assert "PRIVATE_REMOTE_RESPONSE" not in str(error.value)
 
 
 def test_shopify_success_pagination():

@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { NavLink, Route, Routes, useLocation, Link } from "react-router-dom";
 import {
   ArrowUpRight,
@@ -51,6 +51,7 @@ export function App() {
   const [report, setReport] = useState<PublicReport | null>(null);
   const [error, setError] = useState(false);
   const [attempt, setAttempt] = useState(0);
+  const [refreshing, setRefreshing] = useState(true);
   const [menu, setMenu] = useState(false);
   const [days, setDays] = useState(() => {
     try {
@@ -70,9 +71,24 @@ export function App() {
       })
       .catch(() => {
         if (!controller.signal.aborted) setError(true);
+      })
+      .finally(() => {
+        if (!controller.signal.aborted) setRefreshing(false);
       });
     return () => controller.abort();
   }, [attempt]);
+  const refreshReport = useCallback(() => {
+    setRefreshing(true);
+    setError(false);
+    setAttempt((value) => value + 1);
+  }, []);
+  useEffect(() => {
+    const interval = window.setInterval(() => {
+      if (!refreshing && document.visibilityState === "visible")
+        refreshReport();
+    }, 60_000);
+    return () => window.clearInterval(interval);
+  }, [refreshing, refreshReport]);
   useEffect(() => {
     document.title = `${navigation.find((n) => n.path === location.pathname)?.label || "Page not found"} · Ratniva Growth OS`;
   }, [location.pathname]);
@@ -87,9 +103,11 @@ export function App() {
           ? "STALE"
           : report.sourceHealth.some((s) => s.status === "failed")
             ? "ERROR"
-            : report.sourceHealth.some((s) => s.status === "connected")
-              ? "CONNECTED"
-              : "NOT CONFIGURED";
+            : report.latestRun?.status === "partial"
+              ? "PARTIAL"
+              : report.sourceHealth.some((s) => s.status === "connected")
+                ? "CONNECTED"
+                : "NOT CONFIGURED";
   const failedSources =
     report?.sourceHealth.filter(
       (s) => s.status === "failed" || s.status === "stale",
@@ -237,6 +255,15 @@ export function App() {
               <GitHubLink repository={report?.repositoryUrl || null}>
                 View GitHub Actions
               </GitHubLink>
+              <button
+                className="button"
+                onClick={refreshReport}
+                disabled={refreshing}
+                aria-label="Refresh published report"
+              >
+                <RefreshCw size={15} />
+                {refreshing ? "Refreshing…" : "Refresh report"}
+              </button>
             </div>
           </div>
           <div
@@ -250,11 +277,13 @@ export function App() {
                   ? "You’re exploring synthetic example data. No live analytics or store connections."
                   : state === "STALE"
                     ? "This report is over 48 hours old. Run a fresh audit before making decisions."
-                    : state === "NOT CONFIGURED"
-                      ? "No live sources connected. Follow the setup guide to configure read-only collectors."
-                      : error
-                        ? "Report unavailable. No data has been assumed."
-                        : "Public-safe audit workspace. Private analytics stay in authenticated artifacts."}
+                    : state === "PARTIAL"
+                      ? "A real audit completed with sampled or incomplete coverage. See measured findings and the crawler details below."
+                      : state === "NOT CONFIGURED"
+                        ? "No live sources connected. Follow the setup guide to configure read-only collectors."
+                        : error
+                          ? "Report unavailable. No data has been assumed."
+                          : "Latest published audit snapshot. Public website findings are shown; private analytics remain excluded."}
               </span>
             </div>
             <span className="small">
@@ -277,13 +306,7 @@ export function App() {
                 Check that data/report.json exists and passes validation, then
                 try again.
               </EmptyState>
-              <button
-                className="button"
-                onClick={() => {
-                  setError(false);
-                  setAttempt((a) => a + 1);
-                }}
-              >
+              <button className="button" onClick={refreshReport}>
                 <RefreshCw size={16} />
                 Retry
               </button>

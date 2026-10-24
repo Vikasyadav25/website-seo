@@ -5,11 +5,14 @@ content readiness, evidence-led recommendations, and controlled review.
 
 **Live dashboard:** [Open Ratniva Growth OS](https://vikasyadav25.github.io/website-seo/).
 
-**Current release: deployed DEMO. Live API setup pending.**
-All default metrics and products are synthetic. Read-only collectors, factual drafts,
-encrypted private output, and a guarded publishing/rollback path are implemented
-and tested with mocks. No credentials were used, no live collector was verified,
-and no Shopify changes were made. This software makes no ranking guarantees.
+**Local snapshot: real sampled public crawl; Shopify/GSC setup pending.**
+The bundled report is a read-only crawl of eight public pages, collected on
+23 October 2026. It contains measured public HTML findings, not private analytics.
+The deployed site may still serve an earlier report until deployment completes.
+Synthetic examples remain in `examples/` and are explicitly used by demo tests.
+Shopify and Google Search Console have not been verified live; their missing
+metrics are omitted. No Shopify changes were made. This software makes no ranking
+guarantees. See [latest audit](docs/LATEST_AUDIT.md) for findings and limits.
 
 ## Run locally
 

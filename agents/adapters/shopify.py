@@ -6,11 +6,31 @@ from agents.adapters.http import ApiClient, SourceError
 from agents.models import Product, SourceResult
 
 QUERY = Path(__file__).with_suffix(".graphql").read_text(encoding="utf-8")
+STORE_DOMAIN = re.compile(r"[a-z0-9][a-z0-9-]*\.myshopify\.com")
+
+
+def client_credentials_token(domain: str, client_id: str, client_secret: str, api: ApiClient) -> str:
+    """Exchange installed, same-organization app credentials once per audit; never persist tokens."""
+    if not STORE_DOMAIN.fullmatch(domain):
+        raise SourceError("Invalid Shopify store domain")
+    if not client_id or not client_secret:
+        raise SourceError("Shopify app credentials are incomplete")
+    payload = api.json("POST", f"https://{domain}/admin/oauth/access_token", data={
+        "grant_type": "client_credentials", "client_id": client_id, "client_secret": client_secret,
+    })
+    token = payload.get("access_token")
+    scope = payload.get("scope")
+    expires = payload.get("expires_in")
+    if (not isinstance(token, str) or not token.strip()
+            or not isinstance(scope, str) or "read_products" not in scope.split(",")
+            or type(expires) is not int or expires <= 0):
+        raise SourceError("Shopify catalog token response is invalid or lacks read_products")
+    return token
 
 
 class Shopify:
     def __init__(self, domain: str, token: str, api: ApiClient, version="2026-07"):
-        if not re.fullmatch(r"[a-z0-9][a-z0-9-]*\.myshopify\.com", domain):
+        if not STORE_DOMAIN.fullmatch(domain):
             raise SourceError("Invalid Shopify store domain")
         if not re.fullmatch(r"20\d{2}-(01|04|07|10)", version):
             raise SourceError("Invalid Shopify API version")

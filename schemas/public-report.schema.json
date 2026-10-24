@@ -168,7 +168,9 @@
               "Pages checked",
               "High severity issues",
               "Product SEO completion",
-              "Awaiting review"
+              "Awaiting review",
+              "Technical findings",
+              "Fetch failures"
             ]
           },
           "value": {

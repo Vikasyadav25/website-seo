@@ -12,6 +12,8 @@ import type { PublicReport } from "../types";
 import { TrendChart } from "../components/TrendChart";
 import { EmptyState } from "../components/EmptyState";
 import { StatusBadge } from "../components/StatusBadge";
+import { AgentActivity } from "../components/AgentActivity";
+import { PriorityFindings } from "../components/PriorityFindings";
 import { dateTime, humanize, inWindow } from "../lib/format";
 
 export function Overview({
@@ -28,31 +30,8 @@ export function Overview({
   const categories = [...new Set(report.issues.map((i) => i.category))];
   return (
     <>
-      <section className="welcome-panel">
-        <div>
-          <span className="eyebrow">
-            A clearer view. A considered next step.
-          </span>
-          <h2>
-            Small improvements.
-            <br />
-            <em>Lasting discovery.</em>
-          </h2>
-          <p>
-            Your search health, product opportunities, and review queue —
-            together in one calm workspace.
-          </p>
-          <Link to="/recommendations" className="button primary">
-            Explore opportunities <ArrowRight size={16} />
-          </Link>
-        </div>
-        <div className="welcome-art" aria-hidden="true">
-          <span className="orbit orbit-one" />
-          <span className="orbit orbit-two" />
-          <Gem strokeWidth={0.7} />
-          <span className="art-caption">THE ART OF BEING FOUND</span>
-        </div>
-      </section>
+      <AgentActivity report={report} />
+      <PriorityFindings report={report} days={days} />
       <div className="section-heading">
         <h2>At a glance</h2>
         <span className="muted small">
@@ -94,14 +73,18 @@ export function Overview({
         <section className="panel">
           <div className="section-heading">
             <div>
-              <h2>SEO health</h2>
+              <h2>
+                {report.mode === "demo" ? "SEO health" : "Metadata coverage"}
+              </h2>
               <p className="muted small">
-                Audit completeness, never a search ranking.
+                {report.mode === "demo"
+                  ? "Audit completeness, never a search ranking."
+                  : "Share of title and description presence checks passed on sampled pages. Not a ranking."}
               </p>
             </div>
             <span className="legend">
               <i />
-              Health score
+              {report.mode === "demo" ? "Health score" : "Presence checks"}
             </span>
           </div>
           <TrendChart points={points} demo={report.mode === "demo"} />
@@ -137,7 +120,7 @@ export function Overview({
               ))}
             </div>
           ) : (
-            <EmptyState title="No issues in this report" />
+            <EmptyState title="No findings published for the sampled pages" />
           )}
           <Link className="text-link" to="/technical">
             View technical audit <ArrowRight size={14} />
@@ -169,6 +152,26 @@ export function Overview({
                   <strong>{p.reason}</strong>
                   <p className="muted small">
                     {p.targetKind} · Risk {p.risk}/5 · Human review required
+                  </p>
+                </div>
+                <ArrowRight size={16} />
+              </Link>
+            ))
+          ) : report.issues.length ? (
+            report.issues.slice(0, 3).map((issue) => (
+              <Link
+                className="opportunity-row"
+                to={`/technical?category=${encodeURIComponent(issue.category)}`}
+                key={issue.id}
+              >
+                <span className="opportunity-icon">
+                  <ScanLine size={18} />
+                </span>
+                <div>
+                  <strong>{issue.recommendation}</strong>
+                  <p className="muted small">
+                    Public crawl · {humanize(issue.severity)} · Verify intent
+                    before editing
                   </p>
                 </div>
                 <ArrowRight size={16} />

@@ -1,7 +1,41 @@
 # Read-only integration and approved publication
 
-No live credentials were used during implementation. Keep the default demo until
-these configuration and acceptance checks are performed by the store owner.
+A live public HTML crawl has been verified. Authenticated Shopify/GSC calls remain
+unverified until the configured production audit succeeds.
+
+## Installed Dev Dashboard app: next steps
+
+This flow requires the app and target store to belong to the same Shopify
+organization, and the app to be installed with `read_products` approved.
+
+1. Open **Dev Dashboard > RatnivaSEO > Settings > Credentials**.
+2. Open the GitHub repository's **Settings > Secrets and variables > Actions >
+   Secrets > New repository secret**. Add both:
+   - `SHOPIFY_CLIENT_ID`: the app's Client ID.
+   - `SHOPIFY_CLIENT_SECRET`: the app's Client secret.
+3. Under **Variables**, set `SHOPIFY_STORE_DOMAIN` to the store's exact
+   `*.myshopify.com` domain (no scheme or path), and `AUDIT_MODE=production`.
+4. Ensure the updated collector and `daily-audit.yml` are committed and pushed to
+   `main` before running Actions. These are local changes until pushed.
+5. Open **Actions > Daily audit > Run workflow**, select `main` and `production`.
+6. Download `public-safe-report` and check the `shopify` row in `sourceHealth`.
+   `connected` proves a catalog response; a green workflow alone does not.
+
+Do not put the Client secret into `SHOPIFY_READ_ACCESS_TOKEN`. That field is an
+alternative for an already-issued access token and is not required with the
+complete Client ID/secret pair. Environment secrets are not used by Daily audit;
+use **repository secrets**.
+
+The worker exchanges the pair for a fresh token once per audit, validates the
+returned `read_products` scope, and keeps the token only in memory. A complete
+client pair takes precedence over a supplied access token. There is no token
+file/cache or browser credential handling. Shopify issues these tokens for 24
+hours; the audit is bounded to ten minutes. A rejected exchange marks the source
+failed without falling back to an old token or logging the response.
+
+If Shopify refuses the grant because the app/store are in different organizations,
+this flow cannot connect them; use the appropriate authorization-code integration.
+Do not create a replacement store. See [Shopify authentication documentation](https://shopify.dev/docs/apps/build/authentication-authorization/client-credentials-grant).
 
 ## Read-only configuration
 
@@ -10,7 +44,9 @@ Repository Settings → Secrets and variables → Actions:
 | Name                            | Storage  | Purpose                                             |
 | ------------------------------- | -------- | --------------------------------------------------- |
 | `SHOPIFY_STORE_DOMAIN`          | Variable | Actual `store.myshopify.com` domain                 |
-| `SHOPIFY_READ_ACCESS_TOKEN`     | Secret   | Catalog read token; only `read_products`            |
+| `SHOPIFY_CLIENT_ID`             | Secret   | Installed same-organization app Client ID           |
+| `SHOPIFY_CLIENT_SECRET`         | Secret   | App Client secret; exchanged once per audit         |
+| `SHOPIFY_READ_ACCESS_TOKEN`     | Secret   | Optional existing catalog token; `read_products`    |
 | `GSC_SITE_URL`                  | Variable | Verified exact property identifier                  |
 | `GSC_CREDENTIALS_JSON`          | Secret   | Authorised service-account identity JSON            |
 | `PAGESPEED_API_KEY`             | Secret   | Optional server-side PSI key                        |
@@ -19,10 +55,24 @@ Repository Settings → Secrets and variables → Actions:
 | `AUDIT_MODE`                    | Variable | `demo` by default; `production` after configuration |
 | `PRIVATE_REPORT_ENCRYPTION_KEY` | Secret   | Optional Fernet key for raw report encryption       |
 
-Locally, set `SHOPIFY_ADMIN_ACCESS_TOKEN` for catalog reads, because there is no
-separate local read/write credential loader. The daily workflow maps the separate
-read token into that process variable. `.env.example` is documentation; files are
-not auto-loaded. Set environment values in your terminal or a secure process runner.
+Locally, set the same domain and Client ID/secret pair in the worker process
+environment. Alternatively, provide `SHOPIFY_READ_ACCESS_TOKEN`; the collector
+also supports `SHOPIFY_ADMIN_ACCESS_TOKEN` as a legacy fallback. Write access is
+not required. `.env.example` is documentation; files are not auto-loaded. Editing
+it does not establish a connection. Keep real values in a secure process runner or
+GitHub Actions secrets, never in the example.
+
+To collect public HTML without credentials, run locally in PowerShell:
+
+```powershell
+$env:ENABLE_PUBLIC_CRAWL='true'
+python -m agents.main --mode production --read-only --collect --output private/public-report.json
+python scripts/validate-public-data.py private/public-report.json
+```
+
+Inspect `sourceHealth` in that report. Only a successful source request verifies
+a connection. Missing Shopify/GSC credentials remain `not_configured`; a working
+public crawler does not verify either API. Raw details stay under `private/`.
 
 Dispatch Daily audit → mode `production`. Missing sources must show not_configured;
 failed sources must not show false success. Inspect `public-safe-report` before

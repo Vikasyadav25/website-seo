@@ -1,5 +1,25 @@
 @import "tailwindcss";
 
+.agent-activity .eyebrow {
+  margin-bottom: 6px;
+}
+.agent-activity .section-heading {
+  margin-bottom: 10px;
+}
+.agent-run-details {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin: 13px 0;
+  font-size: 12px;
+}
+.agent-run-details > span:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
 @theme {
   --font-sans:
     "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;

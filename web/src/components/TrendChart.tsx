@@ -7,6 +7,13 @@ export function TrendChart({
   demo: boolean;
 }) {
   if (!points.length) return <EmptyState title="No health history yet" />;
+  if (points.length === 1)
+    return (
+      <EmptyState title="First measured baseline recorded">
+        {points[0].score}/100 on {points[0].date}. More completed audit dates
+        are needed for a trend.
+      </EmptyState>
+    );
   const line = points
     .map(
       (p, i) =>

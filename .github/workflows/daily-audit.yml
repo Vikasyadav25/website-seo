@@ -39,7 +39,9 @@ jobs:
           PUBLISH_ENABLED: "false"
           ENABLE_SHOPIFY_WRITES: "false"
           SHOPIFY_STORE_DOMAIN: ${{ vars.SHOPIFY_STORE_DOMAIN }}
-          SHOPIFY_ADMIN_ACCESS_TOKEN: ${{ secrets.SHOPIFY_READ_ACCESS_TOKEN }}
+          SHOPIFY_CLIENT_ID: ${{ secrets.SHOPIFY_CLIENT_ID }}
+          SHOPIFY_CLIENT_SECRET: ${{ secrets.SHOPIFY_CLIENT_SECRET }}
+          SHOPIFY_READ_ACCESS_TOKEN: ${{ secrets.SHOPIFY_READ_ACCESS_TOKEN }}
           GSC_SITE_URL: ${{ vars.GSC_SITE_URL }}
           GSC_CREDENTIALS_JSON: ${{ secrets.GSC_CREDENTIALS_JSON }}
           PAGESPEED_API_KEY: ${{ secrets.PAGESPEED_API_KEY }}

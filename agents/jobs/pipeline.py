@@ -1,6 +1,7 @@
 """Private collection and recommendations; explicitly allowlisted public count output."""
 import json
 import os
+import re
 import sqlite3
 from datetime import datetime, timezone
 from pathlib import Path
@@ -11,12 +12,13 @@ from agents.adapters.gsc import collect_gsc, service_account_token
 from agents.adapters.http import ApiClient, SourceError
 from agents.adapters.merchant_manual import import_diagnostics
 from agents.adapters.pagespeed import collect_pagespeed
-from agents.adapters.shopify import Shopify
+from agents.adapters.shopify import Shopify, client_credentials_token
 from agents.jobs.crawl_site import crawl
 from agents.models import Product, SourceResult
 from agents.proposals.draft import draft_product
 from agents.proposals.validate import validate_proposal
 from agents.security.public_allowlist import ROOT, validate_public_report
+from agents.security.crawl_export import public_crawl_issues
 
 
 def collect_production(public_report: dict, private_dir: Path, *, env=None, api_factory=ApiClient) -> dict:
@@ -41,8 +43,15 @@ def collect_production(public_report: dict, private_dir: Path, *, env=None, api_
         finally:
             api.close()
 
-    collect("shopify", env.get("SHOPIFY_STORE_DOMAIN") and env.get("SHOPIFY_ADMIN_ACCESS_TOKEN"),
-            lambda api: Shopify(env["SHOPIFY_STORE_DOMAIN"], env["SHOPIFY_ADMIN_ACCESS_TOKEN"], api, config["shopify_api_version"]).inventory(config["max_catalog_pages"]))
+    read_token = env.get("SHOPIFY_READ_ACCESS_TOKEN") or env.get("SHOPIFY_ADMIN_ACCESS_TOKEN")
+    app_credentials = env.get("SHOPIFY_CLIENT_ID") and env.get("SHOPIFY_CLIENT_SECRET")
+
+    def collect_shopify(api):
+        token = client_credentials_token(env["SHOPIFY_STORE_DOMAIN"], env["SHOPIFY_CLIENT_ID"],
+                                         env["SHOPIFY_CLIENT_SECRET"], api) if app_credentials else read_token
+        return Shopify(env["SHOPIFY_STORE_DOMAIN"], token, api, config["shopify_api_version"]).inventory(config["max_catalog_pages"])
+
+    collect("shopify", env.get("SHOPIFY_STORE_DOMAIN") and (app_credentials or read_token), collect_shopify)
     collect("gsc", env.get("GSC_SITE_URL") and env.get("GSC_CREDENTIALS_JSON"),
             lambda api: collect_gsc(api, env["GSC_SITE_URL"], service_account_token(env["GSC_CREDENTIALS_JSON"])))
     urls = ["https://ratniva.com" + path for path in config["sample_paths"]]
@@ -93,16 +102,28 @@ def collect_production(public_report: dict, private_dir: Path, *, env=None, api_
     run = {"runId": "audit-" + stamp.replace(":", ""), "startedAt": stamp, "finishedAt": datetime.now(timezone.utc).isoformat(),
            "status": status, "jobName": "Read-only production audit", "sourceStatuses": health,
            "issueCounts": {key: 0 for key in counts}}
-    # Detailed findings and drafts remain private even when aggregate counts are authorised.
+    crawler = next((r for r in results if r.name == "crawler"), None)
+    public_issues = []
+    if config.get("publish_public_crawl_findings") is True and crawler:
+        public_issues = public_crawl_issues(crawler.records, public_report)
+        public_report["issues"] = public_issues
+    if (re.fullmatch(r"[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+", env.get("GITHUB_REPOSITORY", ""))
+            and env.get("GITHUB_RUN_ID", "").isdigit()):
+        run["githubRunUrl"] = f"https://github.com/{env['GITHUB_REPOSITORY']}/actions/runs/{env['GITHUB_RUN_ID']}"
+    # Only public-crawl measures are enabled here. Catalog/GSC/draft information stays private.
     if config.get("publish_public_audit_metrics") is True:
-        pages = [r for s in results if s.name == "crawler" for r in s.records if r.get("kind") == "page"]
-        run["issueCounts"] = counts
+        pages = [r for r in (crawler.records if crawler else []) if r.get("kind") == "page"]
+        run["issueCounts"] = {s: sum(i["severity"] == s for i in public_issues) for s in counts}
         kpis = []
-        if pages:
-            kpis.extend([{"label": "Pages checked", "value": len(pages), "asOf": stamp},
-                         {"label": "High severity issues", "value": counts["high"] + counts["critical"], "asOf": stamp}])
-        if any(r.name == "shopify" and r.status == "connected" and r.complete for r in results):
-            kpis.append({"label": "Awaiting review", "value": len(proposals), "asOf": stamp})
+        if crawler and crawler.status == "connected":
+            failures = sum(r.get("kind") == "fetch-failure" for r in crawler.records)
+            kpis = [{"label": label, "value": value, "asOf": stamp} for label, value in (
+                ("Pages checked", len(pages)), ("Technical findings", len(public_issues)),
+                ("High severity issues", run["issueCounts"]["high"] + run["issueCounts"]["critical"]),
+                ("Fetch failures", failures))]
+            if pages:
+                passed = sum(bool(p.get("title", "").strip()) + bool(p.get("description", "").strip()) for p in pages)
+                public_report["healthHistory"] = [{"date": stamp[:10], "score": round(100 * passed / (2 * len(pages))), "pagesChecked": len(pages)}]
         public_report["publicSafeKpis"] = kpis
     public_report["latestRun"] = run
     public_report["runs"] = [run]

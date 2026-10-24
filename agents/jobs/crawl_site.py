@@ -124,8 +124,13 @@ def crawl(api: ApiClient, paths: list[str], stamp: str, *, max_pages=8, delay=1.
                                            "recommendation": "Review internal links and whether removal or a relevant redirect is intended."})
         if queue:
             result.complete = False
-        if not result.complete:
-            result.message = "Bounded crawl completed partially; unvisited URLs are not assumed healthy."
+        pages_checked = sum(record.get("kind") == "page" for record in result.records)
+        failures = sum(record.get("kind") == "fetch-failure" for record in result.records)
+        result.message = f"Checked {pages_checked} HTML pages within a {max_pages}-URL request limit; {failures} fetch failures."
+        if queue:
+            result.message += " More URLs remain queued; this is a sampled crawl, not full-site coverage."
+        elif not result.complete:
+            result.message += " Some requests could not be verified."
         return result
     except (SourceError, OSError, ValueError):
         result.status = "failed"

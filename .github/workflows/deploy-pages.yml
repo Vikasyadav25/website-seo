@@ -29,21 +29,33 @@ jobs:
       - run: npm install --global pnpm@12.9.1
       - run: pnpm install --frozen-lockfile
       - run: python -m pip install -r requirements.txt
-      - name: Generate safe report from reviewed main
+      - name: Find latest trusted audit for a code-only deployment
+        id: latest_audit
         if: github.event_name != 'workflow_run' || github.event.workflow_run.name != 'Daily audit'
-        run: python -m agents.main --mode demo --repository-url "$REPOSITORY_URL" --output web/public/data/report.json
+        run: python scripts/latest-audit-run.py
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Generate an initial report only when no completed audit exists
+        if: (github.event_name != 'workflow_run' || github.event.workflow_run.name != 'Daily audit') && steps.latest_audit.outputs.run_id == ''
+        run: |
+          if [ "$AUDIT_MODE" = "production" ]; then
+            python -m agents.main --mode production --read-only --repository-url "$REPOSITORY_URL" --output web/public/data/report.json
+          else
+            python -m agents.main --mode demo --repository-url "$REPOSITORY_URL" --output web/public/data/report.json
+          fi
         env:
           REPOSITORY_URL: https://github.com/${{ github.repository }}
+          AUDIT_MODE: ${{ vars.AUDIT_MODE || 'demo' }}
       - name: Retrieve only the public-safe report from a trusted main audit
-        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Daily audit'
+        if: (github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Daily audit') || steps.latest_audit.outputs.run_id != ''
         uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5
         with:
           name: public-safe-report
           path: incoming-public-report
-          run-id: ${{ github.event.workflow_run.id }}
+          run-id: ${{ github.event.workflow_run.name == 'Daily audit' && github.event.workflow_run.id || steps.latest_audit.outputs.run_id }}
           github-token: ${{ github.token }}
       - name: Select trusted audit JSON
-        if: github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Daily audit'
+        if: (github.event_name == 'workflow_run' && github.event.workflow_run.name == 'Daily audit') || steps.latest_audit.outputs.run_id != ''
         run: cp incoming-public-report/public-report.json web/public/data/report.json
       - run: python scripts/validate-public-data.py web/public/data/report.json
       - run: pnpm lint

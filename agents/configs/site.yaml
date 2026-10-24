@@ -6,4 +6,5 @@ crawl_delay_seconds: 1.5
 sample_paths:
   - /
   - /collections/all
-publish_public_audit_metrics: false
+publish_public_audit_metrics: true
+publish_public_crawl_findings: true

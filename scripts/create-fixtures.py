@@ -54,7 +54,7 @@ report = obj({
     "schemaVersion": {"const": 1}, "mode": enum("demo", "connected"), "generatedAt": date,
     "siteUrl": url, "repositoryUrl": {"anyOf": [{"type": "null"}, {**url, "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+$"}]},
     "latestRun": {"anyOf": [{"type": "null"}, run]}, "sourceHealth": arr(source),
-    "publicSafeKpis": arr(obj({"label": enum("Pages checked", "High severity issues", "Product SEO completion", "Awaiting review"),
+    "publicSafeKpis": arr(obj({"label": enum("Pages checked", "High severity issues", "Product SEO completion", "Awaiting review", "Technical findings", "Fetch failures"),
                                "value": number, "unit": string, "asOf": date}, ["label", "value", "asOf"])),
     "issues": arr(issue), "productAuditSummaries": arr(product), "recommendations": arr(recommendation),
     "runs": arr(run), "healthHistory": arr(obj({"date": {"type": "string", "format": "date"}, "score": score, "pagesChecked": number})),

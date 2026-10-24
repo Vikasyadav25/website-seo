@@ -5,6 +5,7 @@
 - Phase 1: all twelve routes, responsive UI, source/error/stale/empty states,
   filters/sorts/date windows, product drawer, exact diffs, exports, tests and Pages.
 - Phase 2 core: typed read-only Shopify/GSC/PageSpeed collectors, bounded crawler,
+  per-audit same-organization Shopify client-credentials exchange (mock verified),
   retry/pagination/timeout/error behavior, private snapshots, source freshness,
   explicit public-count opt-in, encryption and trusted report handoff.
 - Phase 3 core: conservative missing-description drafts, evidence IDs, priority
@@ -28,7 +29,10 @@
 - Longitudinal real performance comparisons and measured ranking/conversion outcomes.
 
 The code is not claimed production-approved merely because mocked tests pass.
-No live store calls or writes were made. Default dashboard data remains DEMO.
+No authenticated store calls or writes were made. A live sampled public HTML
+crawl was completed on 23 October 2026; its sanitized snapshot is bundled locally.
+Shopify/GSC/PageSpeed remain not configured. This does not verify full-site SEO
+or deployment of these local changes. See [latest audit](LATEST_AUDIT.md).
 
 ## Deliberately limited coverage
 

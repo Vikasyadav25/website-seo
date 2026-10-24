@@ -1,4 +1,6 @@
 import { test, expect } from "@playwright/test";
+import demoReport from "../../examples/demo-report.json" with { type: "json" };
+import { connectedReport } from "../src/test/connectedReport";
 const routes = [
   "/",
   "/search",
@@ -13,6 +15,43 @@ const routes = [
   "/reports",
   "/settings",
 ];
+// Demo interactions use explicit fixtures even when the shipped snapshot is real.
+test.beforeEach(async ({ page }) => {
+  await page.route("**/data/report.json", (route) =>
+    route.fulfill({ json: demoReport }),
+  );
+});
+test("production report shows real activity, measurements and crawl findings", async ({
+  page,
+}) => {
+  await page.route("**/data/report.json", (route) =>
+    route.fulfill({ json: connectedReport() }),
+  );
+  await page.goto("#/");
+  await expect(page.getByText("Website crawler agent")).toBeVisible();
+  await expect(
+    page.getByRole("heading", { name: "What to work on first" }),
+  ).toBeVisible();
+  await expect(page.locator(".welcome-art")).toHaveCount(0);
+  await expect(page.locator(".environment-tag")).toHaveText("PARTIAL");
+  await expect(
+    page.getByText("Technical findings", { exact: true }),
+  ).toBeVisible();
+  await expect(
+    page.getByText("First measured baseline recorded"),
+  ).toBeVisible();
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= innerWidth,
+    ),
+  ).toBe(true);
+  await page.goto("#/technical");
+  await expect(page.locator("tbody tr")).toHaveCount(1);
+  await page.getByRole("button", { name: "Inspect" }).click();
+  await expect(page.getByRole("dialog")).toContainText(
+    "No nonempty meta description detected.",
+  );
+});
 test("all routes load on a GitHub Pages project subpath", async ({
   page,
 }, testInfo) => {

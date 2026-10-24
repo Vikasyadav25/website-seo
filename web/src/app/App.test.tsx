@@ -4,6 +4,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 import fixture from "../../../examples/demo-report.json";
 import disconnected from "../../../examples/disconnected-report.json";
 import { App } from "./App";
+import { connectedReport } from "../test/connectedReport";
 
 beforeEach(() => {
   localStorage.clear();
@@ -20,6 +21,49 @@ function mount(route = "/") {
   );
 }
 describe("dashboard states", () => {
+  it("shows measured production activity, findings and partial coverage", async () => {
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: async () => connectedReport(),
+    } as Response);
+    mount();
+    expect(
+      await screen.findByText("Website crawler agent"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByText("PARTIAL", { selector: ".environment-tag" }),
+    ).toBeInTheDocument();
+    expect(screen.getByText("Pages checked")).toBeInTheDocument();
+    expect(screen.getByText("Technical findings")).toBeInTheDocument();
+    expect(
+      screen.getByText("First measured baseline recorded"),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("link", { name: "View this audit run ↗" }),
+    ).toHaveAttribute("href", expect.stringContaining("/actions/runs/123"));
+    expect(
+      screen.queryByText("No public metrics published"),
+    ).not.toBeInTheDocument();
+  });
+  it("reloads published data without privileged browser requests", async () => {
+    mount();
+    await screen.findByText("At a glance");
+    vi.mocked(fetch).mockResolvedValue({
+      ok: true,
+      json: async () => connectedReport(),
+    } as Response);
+    fireEvent.click(
+      screen.getByRole("button", { name: "Refresh published report" }),
+    );
+    expect(
+      await screen.findByText("Website crawler agent"),
+    ).toBeInTheDocument();
+    expect(
+      vi
+        .mocked(fetch)
+        .mock.calls.every(([url]) => String(url).endsWith("data/report.json")),
+    ).toBe(true);
+  });
   it("labels stale production data explicitly", async () => {
     vi.mocked(fetch).mockResolvedValue({
       ok: true,
