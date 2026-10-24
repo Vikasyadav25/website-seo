@@ -28,6 +28,9 @@ not a full definitive query inventory; average position is not live rank.
 
 Reference: [Search Analytics query](https://developers.google.com/webmaster-tools/v1/searchanalytics/query).
 Identity setup and real property authorization still require live verification.
+On a 403, the collector checks the authenticated identity's property list and
+exports only a fixed Ratniva access hint. Other properties and identities remain
+private. It does not silently switch the configured property.
 
 ## PageSpeed and crawler
 
@@ -35,6 +38,10 @@ Identity setup and real property authorization still require live verification.
 desktop, cached seven days locally. Scheduled clean runners do not share that cache;
 run the job weekly or leave it disabled to control quota. Lab data is not field CWV.
 Reference: [runPagespeed](https://developers.google.com/speed/docs/insights/v5/reference/pagespeedapi/runpagespeed).
+PageSpeed samples use a 60-second timeout and one attempt per URL/strategy instead
+of retrying the shared 20-second timeout. Sampling stays bounded to five URLs;
+the current configuration contains two. A failed sample retains successful ones
+and reports a partial failure rather than claiming complete coverage.
 
 `ENABLE_PUBLIC_CRAWL=true` enables eight same-origin HTML pages with robots policy,
 throttling, public-DNS checks, and no redirect following. A failed robots fetch

@@ -20,7 +20,8 @@ def collect_pagespeed(api: ApiClient, urls: list[str], key: str, cache: Path, no
                     record = json.loads(path.read_text(encoding="utf-8"))
                 else:
                     payload = api.json("GET", "https://www.googleapis.com/pagespeedonline/v5/runPagespeed",
-                                       params={"url": url, "strategy": strategy, "category": "performance", "key": key})
+                                       params={"url": url, "strategy": strategy, "category": "performance", "key": key},
+                                       timeout=60, max_attempts=1)
                     lighthouse = payload["lighthouseResult"]
                     audits = lighthouse["audits"]
                     record = {"url": url, "strategy": strategy, "kind": "lab", "asOf": lighthouse["fetchTime"],

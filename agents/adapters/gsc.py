@@ -19,6 +19,29 @@ def service_account_token(credentials_json: str) -> str:
         raise SourceError("GSC identity could not be authenticated") from None
 
 
+def property_access_hint(api: ApiClient, site: str, access_token: str) -> str:
+    """Diagnose a rejected property without exporting identities or other sites."""
+    try:
+        payload = api.json("GET", "https://www.googleapis.com/webmasters/v3/sites",
+                           headers={"Authorization": f"Bearer {access_token}"}, max_attempts=1)
+        entries = payload.get("siteEntry", [])
+        if not isinstance(entries, list):
+            return "Property access check unavailable."
+        authorized = {entry.get("siteUrl") for entry in entries if isinstance(entry, dict)
+                      and isinstance(entry.get("siteUrl"), str)
+                      and isinstance(entry.get("permissionLevel"), str)
+                      and entry.get("permissionLevel") in {"siteOwner", "siteFullUser", "siteRestrictedUser"}}
+        if site in authorized:
+            return "Configured property is listed; its analytics request was rejected."
+        if site == "https://ratniva.com/" and "sc-domain:ratniva.com" in authorized:
+            return "Configured URL-prefix property is not authorized. Domain property is authorized; use GSC_SITE_URL=sc-domain:ratniva.com."
+        if authorized & {"https://ratniva.com/", "https://www.ratniva.com/", "sc-domain:ratniva.com"}:
+            return "A different Ratniva property is authorized; verify the exact GSC_SITE_URL."
+        return "No authorized Ratniva property found for this identity. Add this identity in Search Console users and permissions."
+    except SourceError:
+        return "Property access check unavailable."
+
+
 def collect_gsc(api: ApiClient, site: str, access_token: str, *, today=None, days=28, max_pages=5):
     today = today or date.today()
     end = today - timedelta(days=3)
@@ -45,6 +68,8 @@ def collect_gsc(api: ApiClient, site: str, access_token: str, *, today=None, day
     except SourceError as error:
         result.status = "failed"
         result.message = f"Search performance collection incomplete ({error.diagnostic()}); retained rows stay private."
+        if error.status == 403 and error.code not in {"SERVICE_DISABLED", "accessNotConfigured"}:
+            result.message += " " + property_access_hint(api, site, access_token)
     result.complete = False
     if not result.message:
         result.message = "GSC row budget reached; partial data only."

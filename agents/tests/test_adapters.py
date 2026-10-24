@@ -159,6 +159,34 @@ def test_gsc_final_window():
     assert bodies[0]["dataState"] == "final" and bodies[0]["endDate"] == "2026-10-20"
 
 
+@pytest.mark.parametrize("entries,hint", [
+    ([{"siteUrl": "sc-domain:ratniva.com", "permissionLevel": "siteFullUser"}],
+     "use GSC_SITE_URL=sc-domain:ratniva.com"),
+    ([{"siteUrl": "https://ratniva.com/", "permissionLevel": "siteFullUser"}],
+     "Configured property is listed"),
+    ([{"siteUrl": "https://www.ratniva.com/", "permissionLevel": "siteOwner"}],
+     "A different Ratniva property is authorized"),
+    ([{"siteUrl": "sc-domain:ratniva.com", "permissionLevel": "siteUnverifiedUser"}],
+     "No authorized Ratniva property found"),
+    ([{"siteUrl": "PRIVATE_OTHER_PROPERTY", "permissionLevel": ["PRIVATE_INVALID_PERMISSION"]}],
+     "No authorized Ratniva property found"),
+])
+def test_gsc_checks_property_access_without_exposing_other_sites(entries, hint):
+    calls = []
+
+    def handler(request):
+        calls.append(request.method)
+        if request.method == "GET":
+            return httpx.Response(200, json={"siteEntry": entries + [
+                {"siteUrl": "PRIVATE_OTHER_PROPERTY", "permissionLevel": "siteOwner"}]})
+        return httpx.Response(403, json={"error": {"errors": [{"reason": "forbidden"}]}})
+
+    result = collect_gsc(client(handler), "https://ratniva.com/", "PRIVATE_TOKEN")
+    assert calls == ["POST", "GET"]
+    assert result.status == "failed" and hint in result.message
+    assert "PRIVATE_" not in result.message
+
+
 def test_pagespeed_cache(tmp_path):
     calls = []
 
@@ -171,6 +199,19 @@ def test_pagespeed_cache(tmp_path):
     second = collect_pagespeed(api, ["https://ratniva.com/"], "x", tmp_path)
     assert first.records == second.records
     assert len(calls) == 2  # mobile + desktop, then cached
+
+
+def test_pagespeed_uses_longer_single_attempt_samples(tmp_path):
+    calls = []
+
+    def handler(request):
+        calls.append(1)
+        assert request.extensions["timeout"]["read"] == 60
+        raise httpx.ReadTimeout("PRIVATE_URL", request=request)
+
+    result = collect_pagespeed(client(handler), ["https://ratniva.com/"], "x", tmp_path)
+    assert len(calls) == 2  # one attempt per strategy; avoids three long retries
+    assert result.status == "failed" and "timeout" in result.message
 
 
 def test_gsc_retains_partial_rows():

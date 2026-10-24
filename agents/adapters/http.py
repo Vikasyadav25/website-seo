@@ -56,21 +56,23 @@ class ApiClient:
         if self.owns_client:
             self.client.close()
 
-    def request(self, method, url, **kwargs) -> httpx.Response:
-        for attempt in range(3):
+    def request(self, method, url, *, max_attempts=3, **kwargs) -> httpx.Response:
+        if type(max_attempts) is not int or not 1 <= max_attempts <= 3:
+            raise ValueError("Request attempts must be between one and three")
+        for attempt in range(max_attempts):
             if self.remaining <= 0:
                 raise BudgetExceeded("Source call budget reached")
             self.remaining -= 1
             try:
                 response = self.client.request(method, url, **kwargs)
             except httpx.TransportError as error:
-                if attempt == 2:
+                if attempt == max_attempts - 1:
                     code = "timeout" if isinstance(error, httpx.TimeoutException) else "network_error"
                     raise SourceError("Source timeout or network failure", code=code) from None
                 self.sleep(2 ** attempt)
                 continue
             if response.status_code in (429, 500, 502, 503, 504):
-                if attempt == 2:
+                if attempt == max_attempts - 1:
                     raise SourceError("Source retry budget exhausted", status=response.status_code,
                                       code=google_error_reason(response))
                 delay = response.headers.get("retry-after", "")
