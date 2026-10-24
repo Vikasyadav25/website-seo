@@ -1,11 +1,12 @@
-# Public website audit — 23 October 2026
+# Public website audit — 24 October 2026
 
-Collected at 11:34 IST in
-[production audit 40068739733](https://github.com/Vikasyadav25/website-seo/actions/runs/40068739733).
-Shopify client-credentials authentication and catalog reads succeeded; the public
-crawler also connected. [Pages deployment](https://github.com/Vikasyadav25/website-seo/actions/runs/40068783197)
-passed. The live dashboard was verified in a 360px browser: the new report,
-Shopify connection, findings, no browser errors and no horizontal overflow.
+Verified in [production audit 40090935558](https://github.com/Vikasyadav25/website-seo/actions/runs/40090935558).
+Collection started at 17:12 IST on 24 October 2026. Shopify catalog reads,
+PageSpeed sampling and the public crawler succeeded. GSC authenticated but the
+configured property's search-analytics request returned `HTTP 403; forbidden`.
+This is an access rejection, not missing credentials. Verify service-account
+permission and the exact property identifier; no replacement key is needed based
+on this evidence. Raw Google messages, identities and query data are withheld.
 
 The bundled `web/public/data/report.json` remains the earlier 23 October public
 crawl for local use. The hosted dashboard reads the newer validated Actions report.
@@ -31,17 +32,19 @@ links. Presence checks are not schema validation or search-result wins.
    missing descriptions, and retain empty alt for decorative images.
 2. Inspect the repeated findings on product pages to determine whether they come
    from shared theme elements before changing individual product media.
-3. Connect Shopify catalog reads and GSC via GitHub Actions. Run **Daily audit →
-   production** and verify each source's state. A successful crawler does not verify
-   Shopify or GSC. Use the [read-only setup guide](LIVE_SETUP.md).
+3. Resolve GSC property access for the configured service-account identity, then
+   rerun **Daily audit > production**. Shopify and PageSpeed already connected in
+   the latest run. Use the [read-only setup guide](LIVE_SETUP.md).
 
 ## Limits
 
 The crawler stopped at its eight-URL budget with URLs still queued. This is not
 full-site coverage. Title/meta checks inspect presence; JSON-LD parsing does not
 validate Google's eligibility rules. Public JSON excludes private catalog details;
-there is no PageSpeed measurement, click/impression comparison, or ranking analysis.
-GSC, PageSpeed and manual Merchant diagnostics are not configured.
+PageSpeed lab measurements remain private; the public report exposes source
+health. There is no click/impression comparison or ranking analysis because GSC
+access failed. Manual Merchant diagnostics remain not configured: supplied CSVs
+contain item IDs but lack the product URLs required by the current importer.
 
 No private report encryption key is configured. Detailed catalog records/drafts
 created on the ephemeral Actions runner were not uploaded as an artifact; only the

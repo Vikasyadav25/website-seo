@@ -1,7 +1,8 @@
 # Read-only integration and approved publication
 
 Shopify client-credentials authentication, catalog reads, and a public HTML crawl
-were verified on 24 October 2026. GSC/PageSpeed remain not configured. See
+were verified on 24 October 2026. PageSpeed also connected; GSC returned a property
+access rejection (`HTTP 403; forbidden`) in the latest run. See
 [latest audit](LATEST_AUDIT.md) for the actual run and remaining limits.
 
 ## Installed Dev Dashboard app: next steps
